@@ -28,15 +28,15 @@ const router = createBrowserRouter([
         path: "/admin",
         element: <Admin />,
       },
-      {
-        path: "/",
-        element: <LandingPage />,
-      },
-      {
-        path: "/auth/sign-in",
-        element: <SignIn />,
-      },
     ],
+  },
+  {
+    path: "/",
+    element: <LandingPage />,
+  },
+  {
+    path: "/auth/sign-in",
+    element: <SignIn />,
   },
 ]);
 

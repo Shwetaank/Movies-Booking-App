@@ -6,7 +6,3 @@
 :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
 }
-/* Smooth scrolling behavior for internal links */
-html {
-  scroll-behavior: smooth;
-}
