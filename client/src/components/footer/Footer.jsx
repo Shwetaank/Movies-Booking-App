@@ -3,6 +3,7 @@ import { Footer as FootRest } from "flowbite-react";
 import { FaLinkedin, FaYoutube, FaTwitter } from "react-icons/fa";
 import { FaSuitcase } from "react-icons/fa";
 import { FaSquareInstagram } from "react-icons/fa6";
+import { motion } from "framer-motion";
 
 // Array of Social Media Links and Icons
 const socials = [
@@ -43,9 +44,14 @@ const Footer = () => {
     <FootRest className="w-full p-4 bg-white dark:bg-gray-800 text-center shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)]">
       <div className="container mx-auto flex flex-col justify-center items-center space-y-4">
         {/* Social Icons */}
-        <div className="flex justify-center items-center w-full">
+        <motion.div
+          className="flex justify-center items-center w-full"
+          initial={{ opacity: 0, x: -50 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.5, ease: "easeOut" }}
+        >
           {socials.map((social) => (
-            <a
+            <motion.a
               key={social.id}
               href={social.link}
               target="_blank"
@@ -53,21 +59,31 @@ const Footer = () => {
               title={social.name}
               aria-label={social.name}
               className="text-4xl w-full flex justify-center items-center transition-transform transform hover:scale-125 duration-300 hover:text-purple-700"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.5, delay: 0.1 * social.id }}
             >
               {social.icon}
-            </a>
+            </motion.a>
           ))}
-        </div>
+        </motion.div>
         <FootRest.Divider />
         {/* Footer text */}
-        <FootRest.Copyright
-          by={
-            <span className=" ml-2 font-bold transition-transform transform hover:scale-110 duration-300 hover:text-purple-700 cursor-pointer">
-              Sin_Greed ™
-            </span>
-          }
-          year={2024}
-        />
+        <motion.div
+          className="mt-4"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <FootRest.Copyright
+            by={
+              <span className=" ml-2 font-bold transition-transform transform hover:scale-110 duration-300 hover:text-purple-700 cursor-pointer">
+                Sin_Greed ™
+              </span>
+            }
+            year={2024}
+          />
+        </motion.div>
       </div>
     </FootRest>
   );

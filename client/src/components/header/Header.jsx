@@ -1,6 +1,7 @@
 import { useUser, UserButton } from "@clerk/clerk-react";
 import { Button, DarkThemeToggle, Navbar } from "flowbite-react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { motion } from "framer-motion";
 
 const Header = () => {
   const navigate = useNavigate();
@@ -20,10 +21,13 @@ const Header = () => {
       className="w-screen px-4 sm:px-8 md:px-12 lg:px-20 xl:px-48 text-xl mx-auto bg-white dark:bg-gray-800 shadow-md"
     >
       <Navbar.Brand onClick={() => navigate("/")}>
-        <img
+        <motion.img
           src="/logo.png"
           className="mr-3 h-6 sm:h-9 cursor-pointer"
           alt="Logo"
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.5 }}
         />
       </Navbar.Brand>
       <div className="flex items-center gap-2 md:gap-6 md:order-2">
@@ -40,31 +44,51 @@ const Header = () => {
           </>
         ) : (
           <>
-            <div className="hidden md:flex md:justify-end md:items-center md:gap-6 xl:gap-10 list-none">
-              <Navbar.Link
-                active={location.pathname === "/home"}
-                onClick={() => navigate("/home")}
-                className={getLinkClass("/home")}
+            <motion.div
+              className="hidden md:flex md:justify-end md:items-center md:gap-6 xl:gap-10 list-none"
+              initial={{ opacity: 0, x: -30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5 }}
+            >
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                className="cursor-pointer"
               >
-                Bookings
-              </Navbar.Link>
-              <Navbar.Link
-                active={location.pathname === "/admin"}
-                onClick={() => navigate("/admin")}
-                className={getLinkClass("/admin")}
+                <Navbar.Link
+                  active={location.pathname === "/home"}
+                  onClick={() => navigate("/home")}
+                  className={getLinkClass("/home")}
+                >
+                  Bookings
+                </Navbar.Link>
+              </motion.div>
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                className="cursor-pointer"
               >
-                Admin Panel
-              </Navbar.Link>
-              <Navbar.Link
-                active={location.pathname === "/about-me"}
-                onClick={() => navigate("/about-me")}
-                className={getLinkClass("/about-me")}
+                <Navbar.Link
+                  active={location.pathname === "/admin"}
+                  onClick={() => navigate("/admin")}
+                  className={getLinkClass("/admin")}
+                >
+                  Admin Panel
+                </Navbar.Link>
+              </motion.div>
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                className="cursor-pointer"
               >
-                About Me
-              </Navbar.Link>
+                <Navbar.Link
+                  active={location.pathname === "/about-me"}
+                  onClick={() => navigate("/about-me")}
+                  className={getLinkClass("/about-me")}
+                >
+                  About Me
+                </Navbar.Link>
+              </motion.div>
               <UserButton />
               <DarkThemeToggle />
-            </div>
+            </motion.div>
             <div className="md:hidden flex gap-4 items-center">
               <UserButton />
               <DarkThemeToggle />
@@ -75,27 +99,33 @@ const Header = () => {
       </div>
       {isSignedIn && (
         <Navbar.Collapse className="md:hidden">
-          <Navbar.Link
-            active={location.pathname === "/home"}
-            onClick={() => navigate("/home")}
-            className={getLinkClass("/home")}
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
           >
-            Bookings
-          </Navbar.Link>
-          <Navbar.Link
-            active={location.pathname === "/admin"}
-            onClick={() => navigate("/admin")}
-            className={getLinkClass("/admin")}
-          >
-            Admin Panel
-          </Navbar.Link>
-          <Navbar.Link
-            active={location.pathname === "/about-me"}
-            onClick={() => navigate("/about-me")}
-            className={getLinkClass("/about-me")}
-          >
-            About Me
-          </Navbar.Link>
+            <Navbar.Link
+              active={location.pathname === "/home"}
+              onClick={() => navigate("/home")}
+              className={getLinkClass("/home")}
+            >
+              Bookings
+            </Navbar.Link>
+            <Navbar.Link
+              active={location.pathname === "/admin"}
+              onClick={() => navigate("/admin")}
+              className={getLinkClass("/admin")}
+            >
+              Admin Panel
+            </Navbar.Link>
+            <Navbar.Link
+              active={location.pathname === "/about-me"}
+              onClick={() => navigate("/about-me")}
+              className={getLinkClass("/about-me")}
+            >
+              About Me
+            </Navbar.Link>
+          </motion.div>
         </Navbar.Collapse>
       )}
     </Navbar>
