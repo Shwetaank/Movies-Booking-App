@@ -10,15 +10,16 @@ const Header = () => {
 
   const getLinkClass = (path) => {
     return location.pathname === path
-      ? "text-purple-600 dark:text-purple-400 bg-purple-100 dark:bg-purple-900 rounded-lg px-2 py-1 font-bold cursor-pointer"
-      : "text-gray-900 dark:text-white font-bold cursor-pointer";
+      ? "text-purple-700 dark:text-purple-300 bg-gray-100 dark:bg-gray-900 rounded-lg px-3 py-2 font-semibold transition-transform transform scale-105 cursor-pointer"
+      : "text-gray-700 dark:text-gray-200 font-semibold transition-transform transform hover:scale-105 cursor-pointer";
   };
+  
 
   return (
     <Navbar
       fluid
       rounded
-      className="w-screen px-4 sm:px-8 md:px-12 lg:px-20 xl:px-48 text-xl mx-auto bg-white dark:bg-gray-800 shadow-md"
+      className="w-screen px-4 sm:px-8 md:px-12 lg:px-20 xl:px-48  text-xl mx-auto bg-white dark:bg-gray-800 shadow-md"
     >
       <Navbar.Brand onClick={() => navigate("/")}>
         <motion.img

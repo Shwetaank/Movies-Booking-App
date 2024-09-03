@@ -4,10 +4,11 @@ import Footer from "../components/footer/Footer";
 
 const LandingPage = () => {
   return (
-    <div className="w-screen min-h-screen flex flex-col bg-white dark:bg-gray-900 text-gray-900 dark:text-white">
+    <div className="w-screen min-h-screen flex flex-col">
       <Header />
-      <main className="flex-grow w-full max-w-7xl p-2 mx-auto my-8">
+      <main className="flex-grow w-full px-4 sm:px-8 md:px-12 lg:px-20 xl:px-48  ">
         <UserButton />
+        hi my name is Shwetank
       </main>
       <Footer />
     </div>
