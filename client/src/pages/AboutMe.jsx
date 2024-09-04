@@ -142,7 +142,9 @@ const AboutMe = () => {
                 <p className="mb-4">{project.description}</p>
                 {/* Features SubSection */}
                 <div className="mb-4">
-                  <h4 className="text-lg font-semibold mb-2 dark:text-purple-700">Features:</h4>
+                  <h4 className="text-lg font-semibold mb-2 dark:text-purple-700">
+                    Features:
+                  </h4>
                   <ul className="list-disc list-inside space-y-2">
                     {project.features.map((feature, i) => (
                       <li key={i}>{feature}</li>
@@ -162,7 +164,9 @@ const AboutMe = () => {
                 </div>
                 {/* Duration */}
                 <div className="mb-4">
-                  <h4 className="text-lg font-semibold mb-2 dark:text-purple-700">Duration:</h4>
+                  <h4 className="text-lg font-semibold mb-2 dark:text-purple-700">
+                    Duration:
+                  </h4>
                   <p>{project.duration}</p>
                 </div>
                 {/* Challenges & Solutions */}
@@ -197,7 +201,9 @@ const AboutMe = () => {
                 {/* Impact */}
                 {project.impact && (
                   <div className="mb-4">
-                    <h4 className="text-lg font-semibold mb-2 dark:text-purple-700">Impact:</h4>
+                    <h4 className="text-lg font-semibold mb-2 dark:text-purple-700">
+                      Impact:
+                    </h4>
                     <p>{project.impact}</p>
                   </div>
                 )}
