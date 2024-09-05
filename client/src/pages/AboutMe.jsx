@@ -9,220 +9,238 @@ import {
   SiMariadb,
 } from "react-icons/si";
 import { motion } from "framer-motion";
+import { Card, Button, Badge } from "flowbite-react";
 
 import AboutMeTitleSwitcher from "../components/titleSwitcher/AboutMeTitleSwitcher";
-import AboutTheseProjectTitleSwitcher from "./../components/titleSwitcher/AboutTheseProjectTitleSwitcher";
+import AboutTheseProjectTitleSwitcher from "../components/titleSwitcher/AboutTheseProjectTitleSwitcher";
 
-// Skill icons and labels
 const skills = [
-  { icon: FaJs, label: "JavaScript" },
-  { icon: FaReact, label: "React" },
-  { icon: SiTailwindcss, label: "Tailwind CSS" },
-  { icon: FaNodeJs, label: "Node.js" },
-  { icon: SiExpress, label: "Express.js" },
-  { icon: SiMongodb, label: "MongoDB" },
-  { icon: SiMariadb, label: "MariaDB" },
-  { icon: SiTypescript, label: "TypeScript" },
-  { icon: SiRedux, label: "Redux" },
-  { icon: SiNextdotjs, label: "Next.js" },
+  { icon: FaJs, label: "JavaScript", experience: "3+ years" },
+  { icon: FaReact, label: "React", experience: "2+ years" },
+  { icon: SiTailwindcss, label: "Tailwind CSS", experience: "2 years" },
+  { icon: FaNodeJs, label: "Node.js", experience: "2 years" },
+  { icon: SiExpress, label: "Express.js", experience: "2 years" },
+  { icon: SiMongodb, label: "MongoDB", experience: "1.5 years" },
+  { icon: SiMariadb, label: "MariaDB", experience: "1 year" },
+  { icon: SiTypescript, label: "TypeScript", experience: "1.5 years" },
+  { icon: SiRedux, label: "Redux", experience: "1.5 years" },
+  { icon: SiNextdotjs, label: "Next.js", experience: "1 year" },
 ];
 
-// Data for the project
 const projects = [
   {
-    name: "AlmaBetter Movies Booking App",
+    name: "AlmaBetter Movies Booking App 🎬",
     description:
-      "A comprehensive movie booking application allowing users to book tickets, explore movie details, and manage their bookings effortlessly. The platform is designed with a seamless user experience in mind, ensuring a smooth journey from selecting a movie to confirming the booking.",
+      "An advanced movie booking application designed to provide a seamless ticket booking experience. It offers a user-friendly interface for browsing movie details, selecting showtimes, and managing bookings efficiently. Leveraging a high-performance tech stack ensures a smooth and reliable user experience.",
     features: [
-      "User-friendly interface for browsing movies and selecting showtimes.",
-      "Secure booking process with multiple payment options.",
-      "Real-time seat selection and availability tracking.",
-      "User authentication and profile management powered by Clerk.",
-      "Responsive design ensuring a consistent experience across devices.",
+      "🌟 Intuitive interface for exploring movies and selecting showtimes.",
+      "🔒 Secure booking process with multiple payment options.",
+      "🎟️ Real-time seat selection and availability tracking.",
+      "🔐 User authentication powered by Clerk for enhanced security.",
+      "📱 Fully responsive design for consistent cross-device experience.",
     ],
     technologies: [
-      "React-Vite",
-      "Flowbite-react",
-      "Redux-Toolkit",
-      "Tailwind CSS",
-      "Node.js",
-      "Express.js",
-      "MongoDB",
-      "axios",
-      "react-icons",
-      "Clerk",
-      "Swagger Js",
+      "⚛️ React-Vite",
+      "✨ Flowbite-react",
+      "🔄 Redux-Toolkit",
+      "🎨 Tailwind CSS",
+      "🌐 Node.js",
+      "🛠️ Express.js",
+      "🗃️ MongoDB",
+      "🔒 Clerk",
+      "📜 Swagger JS",
     ],
     link: "https://github.com/Shwetaank/Movies-Booking-App",
     duration: "August 2024 - September 2024",
     challenges:
-      "A significant challenge was implementing real-time seat selection with live updates to prevent double bookings. This required efficient state management and synchronization between the frontend and backend, ensuring data consistency and a smooth user experience.",
-    techExplanation:
-      "The selected tech stack was chosen to ensure high performance, scalability, and a rich user experience: React-Vite for a fast and responsive frontend, Flowbite-react for pre-built UI components, Redux-Toolkit for managing application state, Tailwind CSS for quick and easy styling, Node.js with Express for the backend services, MongoDB for the database, and Clerk for secure user authentication.",
+      "🚧 Implementing real-time seat selection with effective state management and backend synchronization to avoid double bookings.",
     futureImprovements: [
-      "Introduce a recommendation system that suggests movies based on user preferences.",
-      "Add social sharing features so users can share their booked movies with friends.",
-      "Implement a loyalty program to reward frequent users with discounts or special offers.",
+      "🔍 Recommendation system for personalized movie suggestions.",
+      "🔗 Social sharing features for booked movies to enhance engagement.",
+      "🎁 Loyalty program to reward frequent users and encourage return visits.",
     ],
     impact:
-      "The platform aims to revolutionize the movie booking experience by offering a feature-rich, user-friendly interface that caters to all user needs. It is expected to increase user engagement, drive ticket sales, and enhance the overall user experience with its intuitive design and robust functionality.",
+      "🚀 Transforming the movie booking experience by providing an intuitive interface, boosting ticket sales, and enhancing overall user engagement.",
   },
 ];
 
 const AboutMe = () => {
   return (
-    <div className="w-full h-auto py-8 flex flex-col items-center justify-center px-4 sm:px-8 text-xl ">
-      <div className="w-full max-w-7xl border border-gray-300 rounded-lg shadow-md dark:bg-gray-800">
-        <div className="text-2xl sm:text-4xl font-semibold mb-8 text-center shadow-md">
-          {/* TitleSwitcher */}
+    <div className="w-full h-auto py-16 px-4 sm:px-8 bg-gray-100 dark:bg-gray-900">
+      {/* About Me Section */}
+      <div className="max-w-7xl mx-auto">
+        <motion.div
+          className="text-center mb-12"
+          initial={{ opacity: 0, y: -50 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+        >
           <AboutMeTitleSwitcher />
-        </div>
-        {/* Profile Pic And Section Skill */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 p-4">
-          {/* Profile Pic */}
-          <div className="flex flex-col items-center sm:items-start text-center sm:text-left px-4 border-r border-gray-300">
-            <div className="flex flex-col items-center">
-              <img
-                src="/profile-pic.jpg"
-                alt="profile pic"
-                className="w-32 h-32 sm:w-40 sm:h-40 rounded-full mb-4 shadow-lg border-8 border-purple-100 cursor-pointer"
-              />
-              <p className="text-lg text-justify">
-                Hello, I&apos;m{" "}
-                <strong className="dark:text-purple-700">Shwetank</strong>, a
-                Full Stack Engineer from Pune, India. Leveraging my background
-                in Mechanical Engineering, I specialize in blending creativity
-                with technology to elevate your digital presence. My focus is on
-                delivering exceptional results and driving success for your
-                business.
-              </p>
-            </div>
-          </div>
-          {/* Skills Section */}
-          <div className="flex flex-col items-center justify-center text-center px-4">
-            <h2 className="text-lg sm:text-2xl font-semibold mb-8">
-              My Skills
+        </motion.div>
+
+        <div className="flex flex-col sm:flex-row justify-between items-center p-8 rounded-lg shadow-lg bg-gray-200 dark:bg-gray-800">
+          {/* Image Section */}
+          <motion.div
+            className="flex justify-center items-center w-full sm:w-1/2 group"
+            animate={{ scale: 1 }}
+            transition={{ duration: 0.5 }}
+          >
+            <motion.img
+              src="/profile-pic.jpg"
+              alt="Profile Picture"
+              className="w-40 h-40 sm:w-48 sm:h-48 rounded-full border-8 border-purple-200 shadow-lg transition-transform duration-300 ease-in-out transform group-hover:scale-110"
+            />
+          </motion.div>
+
+          {/* Text Section */}
+          <div className="w-full sm:w-1/2 flex flex-col justify-center text-center">
+            <h2 className="text-3xl sm:text-4xl font-semibold mb-2 text-indigo-700">
+              Shwetank
             </h2>
-            <div className="flex flex-wrap justify-center items-center border border-gray-300 rounded-lg shadow-md p-4">
-              {skills.map(({ icon: Icon, label }, index) => (
-                <motion.div
-                  key={index}
-                  className="flex flex-col items-center py-2 mx-4 mb-6 sm:mb-8"
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
-                >
-                  <Icon
-                    className="text-4xl w-full flex justify-center items-center hover:text-purple-700 transition-colors duration-300 cursor-pointer"
-                    title={label}
-                  />
-                  <p className="text-sm sm:text-base mt-2">{label}</p>
-                </motion.div>
-              ))}
-            </div>
+            <h3 className="text-xl sm:text-2xl mb-4 text-indigo-600">
+              Full Stack Developer 🚀
+            </h3>
+            <p className="text-lg sm:text-xl mb-4 text-justify">
+              I&apos;m a passionate engineer from Pune, India. I specialize in
+              building modern, responsive applications using{" "}
+              <strong>JavaScript</strong>, <strong>TypeScript</strong>, and a
+              full stack of technologies like <strong>React js</strong>,
+              <strong> Node.js</strong>, and <strong> MongoDB</strong>.
+            </p>
+            <Button
+              gradientDuoTone="pinkToOrange"
+              className="mt-4 font-bold shadow-md"
+              href="#projects"
+              aria-label="Explore my work"
+            >
+              Project Detail
+            </Button>
           </div>
         </div>
-      </div>
-      {/* Project Section */}
-      <div className="w-full max-w-7xl mt-8 border border-gray-300 rounded-lg shadow-lg dark:bg-gray-800 text-sm">
-        <div className="text-2xl sm:text-4xl font-semibold mb-8 text-center shadow-md">
-          {/* About These Project Title Switcher */}
-          <AboutTheseProjectTitleSwitcher />
-        </div>
-        <div className="flex justify-center p-4">
-          <div className="w-full flex flex-col space-y-8">
-            {projects.map((project, index) => (
-              <div
+
+        {/* Skills Section */}
+        <motion.div
+          className="mt-12"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.8 }}
+        >
+          <h2 className=" mb-8 text-center  text-2xl sm:text-4xl font-semibold  text-indigo-700">
+            Skills & Expertise 💻
+          </h2>
+          <div className="flex flex-wrap justify-center items-center gap-6">
+            {skills.map(({ icon: Icon, label, experience }, index) => (
+              <motion.div
                 key={index}
-                className="border border-gray-300 rounded-lg shadow-lg p-4 w-full text-justify"
+                className="flex flex-col items-center bg-white dark:bg-gray-800 p-4 rounded-3xl shadow-md hover:scale-105 transition-transform duration-300 relative group"
+                initial={{ scale: 0.9 }}
+                animate={{ scale: 1 }}
+                transition={{ duration: 0.4, delay: index * 0.1 }}
               >
-                <h3 className="text-xl font-semibold mb-2 text-center dark:text-purple-700">
-                  {project.name}
-                </h3>
-                <p className="mb-4">{project.description}</p>
-                {/* Features SubSection */}
-                <div className="mb-4">
-                  <h4 className="text-lg font-semibold mb-2 dark:text-purple-700">
-                    Features:
-                  </h4>
-                  <ul className="list-disc list-inside space-y-2">
-                    {project.features.map((feature, i) => (
-                      <li key={i}>{feature}</li>
-                    ))}
-                  </ul>
-                </div>
-                {/* Technologies Used Subsection */}
-                <div className="mb-4">
-                  <h4 className="text-lg font-semibold mb-2 dark:text-purple-700">
-                    Technologies Used:
-                  </h4>
-                  <ul className="list-disc list-inside space-y-2">
-                    {project.technologies.map((tech, i) => (
-                      <li key={i}>{tech}</li>
-                    ))}
-                  </ul>
-                </div>
-                {/* Duration */}
-                <div className="mb-4">
-                  <h4 className="text-lg font-semibold mb-2 dark:text-purple-700">
-                    Duration:
-                  </h4>
-                  <p>{project.duration}</p>
-                </div>
-                {/* Challenges & Solutions */}
-                <div className="mb-4">
-                  <h4 className="text-lg font-semibold mb-2 dark:text-purple-700">
-                    Challenges & Solutions:
-                  </h4>
-                  <p>{project.challenges}</p>
-                </div>
-                {/* Tech Stack Explanation */}
-                {project.techExplanation && (
-                  <div className="mb-4">
-                    <h4 className="text-lg font-semibold mb-2 dark:text-purple-700">
-                      Tech Stack Explanation:
-                    </h4>
-                    <p>{project.techExplanation}</p>
+                <Icon
+                  className="text-5xl text-purple-700 mb-2"
+                  aria-label={label}
+                />
+                <p className="text-lg font-medium">{label}</p>
+                <span className="absolute bottom-0 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 bg-gray-700 text-white text-sm rounded p-2 shadow-lg">
+                  {`Experience: ${experience}`}
+                </span>
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
+
+        {/* Projects Section */}
+        <motion.div
+          className="mt-16"
+          id="projects"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.8 }}
+        >
+          <AboutTheseProjectTitleSwitcher />
+
+          <div className="mt-8 flex flex-wrap justify-center gap-8">
+            {projects.map((project, index) => (
+              <div key={index} className="w-full rounded-lg shadow-xl">
+                <Card className="border-0 shadow-md dark:bg-gray-900 bg-gradient-to-r from-gray-200 via-gray-300 to-gray-400 p-6 rounded-lg relative overflow-hidden">
+                  <div className="absolute inset-0 bg-gray-100 opacity-50 dark:bg-gray-800 dark:opacity-30"></div>
+                  <div className="relative z-10">
+                    <h3 className="text-3xl font-bold mb-8 text-center text-indigo-700">
+                      {project.name}
+                    </h3>
+                    <p className="mb-8 text-gray-800 dark:text-gray-200 text-justify">
+                      {project.description}
+                    </p>
+                    <div className="bg-gray-200 dark:bg-gray-700 p-4 rounded-lg mb-4">
+                      <strong className="block mb-2 text-gray-700 dark:text-gray-300">
+                        Features:
+                      </strong>
+                      <ul className="list-disc list-inside text-gray-700 dark:text-gray-300">
+                        {project.features.map((feature, i) => (
+                          <li key={i} className="mb-2">
+                            {feature}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                    <div className="bg-gray-200 dark:bg-gray-700 p-4 rounded-lg mb-4">
+                      <strong className="block mb-2 text-gray-700 dark:text-gray-300">
+                        Details:
+                      </strong>
+                      <p className="text-gray-700 dark:text-gray-300">
+                        <strong>Duration:</strong> {project.duration}
+                      </p>
+                      <p className="text-gray-700 dark:text-gray-300">
+                        <strong>Challenges:</strong> {project.challenges}
+                      </p>
+                      <p className="text-gray-700 dark:text-gray-300">
+                        <strong>Technologies:</strong>
+                        <div className="flex flex-wrap gap-4 mt-2">
+                          {project.technologies.map((tech, i) => (
+                            <Badge
+                              key={i}
+                              color="purple"
+                              size="sm"
+                              className="cursor-pointer transition-transform transform hover:scale-105 hover:bg-purple-200"
+                            >
+                              {tech}
+                            </Badge>
+                          ))}
+                        </div>
+                      </p>
+                    </div>
+                    <div className="bg-gray-200 dark:bg-gray-700 p-4 rounded-lg mb-4">
+                      <strong className="block mb-2 text-gray-700 dark:text-gray-300">
+                        Future Improvements:
+                      </strong>
+                      <ul className="list-disc list-inside text-gray-700 dark:text-gray-300">
+                        {project.futureImprovements.map((improvement, i) => (
+                          <li key={i} className="mb-2">
+                            {improvement}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                    <div className="flex justify-center">
+                      <Button
+                        gradientDuoTone="pinkToOrange"
+                        className="mt-4 font-bold shadow-md"
+                        href={project.link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label="View project on GitHub"
+                      >
+                        <FaGithub className="mr-2 text-xl" />
+                        View on GitHub
+                      </Button>
+                    </div>
                   </div>
-                )}
-                {/* Future Improvements */}
-                {project.futureImprovements && (
-                  <div className="mb-4">
-                    <h4 className="text-lg font-semibold mb-2 dark:text-purple-700">
-                      Future Improvements:
-                    </h4>
-                    <ul className="list-disc list-inside space-y-2">
-                      {project.futureImprovements.map((improvement, i) => (
-                        <li key={i}>{improvement}</li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-                {/* Impact */}
-                {project.impact && (
-                  <div className="mb-4">
-                    <h4 className="text-lg font-semibold mb-2 dark:text-purple-700">
-                      Impact:
-                    </h4>
-                    <p>{project.impact}</p>
-                  </div>
-                )}
-                {/* GitHub Repo Link */}
-                <div className="flex justify-center mt-4">
-                  <a
-                    href={project.link}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center text-purple-700 hover:underline"
-                  >
-                    <FaGithub className="mr-2 text-2xl" />
-                    View on GitHub
-                  </a>
-                </div>
+                </Card>
               </div>
             ))}
           </div>
-        </div>
+        </motion.div>
       </div>
     </div>
   );
