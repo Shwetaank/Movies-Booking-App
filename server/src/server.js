@@ -2,7 +2,7 @@ import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
 import connectDB from "./config/db.js";
-import bookingRoutes from "./routes/bookingRoutes.js"
+import bookingRoutes from "./routes/bookingRoutes.js";
 import swaggerUi from "swagger-ui-express";
 import swaggerSpec from "./swagger/swaggerOptions.js";
 
@@ -20,8 +20,7 @@ app.use(cors());
 app.use(express.json());
 
 // Routes
-app.use ("/api",bookingRoutes);
-
+app.use("/api", bookingRoutes);
 
 // Swagger API Documentation
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
