@@ -1,4 +1,3 @@
-// routes/bookingRoutes.js
 import express from "express";
 import {
   createBooking,
@@ -10,86 +9,153 @@ const router = express.Router();
 
 /**
  * @swagger
- * tags:
- *   name: Booking
- *   description: Operations related to movie bookings
+ * components:
+ *   schemas:
+ *     Seat:
+ *       type: object
+ *       properties:
+ *         seatNumber:
+ *           type: string
+ *           description: The seat number (e.g., A1)
+ *           example: "A1"
+ *         isBooked:
+ *           type: boolean
+ *           description: Booking status of the seat
+ *           example: false
+ *     Booking:
+ *       type: object
+ *       properties:
+ *         _id:
+ *           type: string
+ *           description: Unique identifier for the booking
+ *           example: "609c1f4e3f5d6a3b1c7f65d4"
+ *         movie:
+ *           type: string
+ *           description: The movie being booked
+ *           example: "Inception"
+ *         seats:
+ *           type: array
+ *           items:
+ *             $ref: '#/components/schemas/Seat'
+ *         slot:
+ *           type: string
+ *           description: Time slot of the booking
+ *           example: "Evening"
+ *         createdAt:
+ *           type: string
+ *           format: date-time
+ *           description: Timestamp when the booking was created
+ *           example: "2024-09-08T12:34:56Z"
+ *         updatedAt:
+ *           type: string
+ *           format: date-time
+ *           description: Timestamp when the booking was last updated
+ *           example: "2024-09-08T12:34:56Z"
+ *         bookedSeatsCount:
+ *           type: integer
+ *           description: Number of booked seats in the booking
+ *           example: 5
+ *   responses:
+ *     BadRequest:
+ *       description: Bad request - missing required fields or invalid data
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               errors:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     msg:
+ *                       type: string
+ *                       example: "Movie is required"
+ *     InternalServerError:
+ *       description: Internal server error
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               message:
+ *                 type: string
+ *                 example: "Server Error"
  */
 
 /**
  * @swagger
- * /booking:
+ * /api/booking:
  *   post:
  *     summary: Create a new booking
- *     description: Create a booking for a movie, specifying seats and a time slot. The booking information includes movie details, an array of seats with their status, and the time slot for the movie.
+ *     description: Create a booking for a movie, specifying seats and a time slot. The booking includes movie details, an array of seats, and the time slot.
  *     tags: [Booking]
  *     requestBody:
- *       description: Booking information that needs to be created
+ *       description: Booking details for the new booking
  *       required: true
  *       content:
  *         application/json:
  *           schema:
  *             type: object
+ *             properties:
+ *               movie:
+ *                 type: string
+ *                 description: The movie to book
+ *                 example: "Inception"
+ *               seats:
+ *                 type: array
+ *                 items:
+ *                   $ref: '#/components/schemas/Seat'
+ *               slot:
+ *                 type: string
+ *                 description: Time slot of the booking (e.g., Morning, Afternoon, Evening, Night)
+ *                 example: "Evening"
  *             required:
  *               - movie
  *               - seats
  *               - slot
- *             properties:
- *               movie:
- *                 type: string
- *                 description: The title of the movie for which the booking is made
- *                 example: "Inception"
- *               seats:
- *                 type: array
- *                 description: An array of seat objects indicating seat numbers and their booking status
- *                 items:
- *                   type: object
- *                   properties:
- *                     seatNumber:
- *                       type: string
- *                       description: The seat number in the cinema
- *                       example: "A1"
- *                     isBooked:
- *                       type: boolean
- *                       description: Indicates whether the seat is booked or not
- *                       example: false
- *               slot:
- *                 type: string
- *                 description: The time slot for the movie showing
- *                 example: "7:00 PM"
  *     responses:
  *       201:
  *         description: Booking successfully created
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   example: "Booking created successfully"
+ *               $ref: '#/components/schemas/Booking'
  *       400:
- *         description: Bad request - missing required fields or invalid data
+ *         $ref: '#/components/responses/BadRequest'
  *       500:
- *         description: Internal server error
+ *         $ref: '#/components/responses/InternalServerError'
  */
 router.post(
   "/booking",
   body("movie").notEmpty().withMessage("Movie is required"),
   body("seats")
-    .isArray()
-    .withMessage("Seats must be an array")
+    .isArray({ min: 1 })
+    .withMessage("Seats must be an array with at least one seat")
+    .custom((seats) => {
+      const seatNumbers = seats.map((seat) => seat.seatNumber);
+      const uniqueSeats = new Set(seatNumbers);
+      if (seatNumbers.length !== uniqueSeats.size) {
+        throw new Error("Duplicate seat numbers found");
+      }
+      return true;
+    }),
+  body("slot")
     .notEmpty()
-    .withMessage("Seats are required"),
-  body("slot").notEmpty().withMessage("Slot is required"),
+    .withMessage("Slot is required")
+    .isIn(["Morning", "Afternoon", "Evening", "Night"])
+    .withMessage(
+      "Slot must be one of 'Morning', 'Afternoon', 'Evening', or 'Night'"
+    ),
   createBooking
 );
 
 /**
  * @swagger
- * /booking:
+ * /api/booking:
  *   get:
  *     summary: Retrieve the latest booking
- *     description: Fetch the most recent booking made by any user, including details such as movie title, seats, time slot, and timestamps.
+ *     description: Fetch the most recent booking made, including details such as movie title, seats, time slot, and timestamps.
  *     tags: [Booking]
  *     responses:
  *       200:
@@ -97,40 +163,11 @@ router.post(
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 _id:
- *                   type: string
- *                   description: Unique identifier for the booking
- *                 movie:
- *                   type: string
- *                   description: The title of the booked movie
- *                 seats:
- *                   type: array
- *                   items:
- *                     type: object
- *                     properties:
- *                       seatNumber:
- *                         type: string
- *                         description: Seat number in the cinema
- *                       isBooked:
- *                         type: boolean
- *                         description: Status of the seat booking
- *                 slot:
- *                   type: string
- *                   description: The time slot of the movie showing
- *                 createdAt:
- *                   type: string
- *                   format: date-time
- *                   description: Timestamp when the booking was created
- *                 updatedAt:
- *                   type: string
- *                   format: date-time
- *                   description: Timestamp when the booking was last updated
+ *               $ref: '#/components/schemas/Booking'
  *       404:
  *         description: No bookings found
  *       500:
- *         description: Internal server error
+ *         $ref: '#/components/responses/InternalServerError'
  */
 router.get("/booking", getLastBooking);
 

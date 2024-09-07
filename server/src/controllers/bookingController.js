@@ -12,34 +12,39 @@ export const createBooking = [
 
     try {
       const { movie, seats, slot } = req.body;
-      
-      // Create a new booking instance
+
+      // Ensure that there are no duplicate seats (this will be handled by the schema validation)
       const newBooking = new Booking({ movie, seats, slot });
-      
+
       // Save the booking to the database
       await newBooking.save();
-      
-      // Respond with success message
-      res.status(201).json({ message: "Booking saved successfully" });
+
+      // Respond with success message and the saved booking including the virtual field
+      res.status(201).json({
+        message: "Booking saved successfully",
+        booking: newBooking, // This will include virtual fields like `bookedSeatsCount`
+      });
     } catch (error) {
       // Handle server error
       console.error(error.message);
       res.status(500).send("Server Error");
     }
-  }
+  },
 ];
 
 // Get the last booking
 export const getLastBooking = async (req, res) => {
   try {
-    // Find the most recent booking based on createdAt field
-    const lastBooking = await Booking.findOne().sort({ createdAt: -1 }).limit(1);
-    
+    // Find the most recent booking based on the createdAt field
+    const lastBooking = await Booking.findOne()
+      .sort({ createdAt: -1 })
+      .limit(1);
+
     if (!lastBooking) {
       return res.status(404).json({ message: "No booking found" });
     }
-    
-    // Respond with the last booking details
+
+    // Respond with the last booking details including the virtual field
     res.status(200).json(lastBooking);
   } catch (error) {
     // Handle server error
