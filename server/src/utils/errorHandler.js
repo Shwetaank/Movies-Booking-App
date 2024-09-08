@@ -1,12 +1,25 @@
-export const errorHandler = (err, req, res, next) => {
-  // Log the error (optional, useful for debugging)
-  console.error(err.stack);
+// Custom error handler middleware
+const errorHandler = (err, req, res, next) => {
+  // Set status code to 500 (Internal Server Error) if not specified
+  const statusCode = res.statusCode === 200 ? 500 : res.statusCode;
 
-  const statusCode = err.statusCode || 500;
+  // Set response status
+  res.status(statusCode);
 
-  res.status(statusCode).json({
-    success: false,
-    error: err.message || 'Server Error',
-    stack: process.env.NODE_ENV === 'development' ? err.stack : undefined, // Only show stack trace in development mode
+  // Send JSON response with error details
+  res.json({
+    message:
+      process.env.NODE_ENV === "production"
+        ? "Something went wrong"
+        : err.message,
+    stack: process.env.NODE_ENV === "production" ? null : err.stack,
   });
+
+  // Log the error details (can be expanded with a logging service)
+  console.error(`Error: ${err.message}`);
+  if (process.env.NODE_ENV !== "production") {
+    console.error(err.stack); // Log stack trace in development
+  }
 };
+
+export default errorHandler;

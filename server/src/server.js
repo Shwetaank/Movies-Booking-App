@@ -2,11 +2,10 @@ import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
 import connectDB from "./config/db.js";
-import bookingRoutes from "./routes/bookingRoutes.js";
-import adminRoutes from "./routes/adminRoutes.js";
 import swaggerUi from "swagger-ui-express";
-import swaggerSpec from "./swagger/swaggerOptions.js";
-import { errorHandler } from "./utils/errorHandler.js";
+import swaggerJsdoc from "swagger-jsdoc";
+import swaggerOptions from "./swagger/swaggerOptions.js";
+import errorHandler from "./utils/errorHandler.js";
 
 // Load environment variables
 dotenv.config();
@@ -22,11 +21,18 @@ app.use(cors());
 app.use(express.json());
 
 // Routes
-app.use("/api/bookings", bookingRoutes);
-app.use("/api/admin/movies", adminRoutes);
 
-// Swagger API Documentation
+// Generate Swagger Spec using swaggerOptions
+const swaggerSpec = swaggerJsdoc(swaggerOptions);
+
+// Swagger API Documentation Route
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
+// Example Route
+app.get("/", (req, res) => {
+  res.send(`
+    <h1>Welcome to the Movie-Mania API!</h1>`);
+});
 
 // Error handling middleware
 app.use(errorHandler);
