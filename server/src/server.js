@@ -6,6 +6,7 @@ import swaggerUi from "swagger-ui-express";
 import swaggerJsdoc from "swagger-jsdoc";
 import swaggerOptions from "./swagger/swaggerOptions.js";
 import errorHandler from "./utils/errorHandler.js";
+import adminRouter from "./routes/admin-routes.js";
 
 // Load environment variables
 dotenv.config();
@@ -18,21 +19,16 @@ connectDB();
 
 // Middleware Setup
 app.use(cors());
-app.use(express.json());
 
 // Routes
+app.use(express.json());
+app.use("/admin", adminRouter);
 
 // Generate Swagger Spec using swaggerOptions
 const swaggerSpec = swaggerJsdoc(swaggerOptions);
 
 // Swagger API Documentation Route
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-
-// Example Route
-app.get("/", (req, res) => {
-  res.send(`
-    <h1>Welcome to the Movie-Mania API!</h1>`);
-});
 
 // Error handling middleware
 app.use(errorHandler);
