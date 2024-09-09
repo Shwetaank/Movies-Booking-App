@@ -155,4 +155,3 @@ adminRouter.post("/signup", validateAdmin, addAdmin);
 adminRouter.post("/login", validateAdmin, adminLogin);
 
 export default adminRouter;
-// apis: ["./src/routes/*.js"],
