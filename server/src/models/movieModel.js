@@ -24,7 +24,7 @@ const movieSchema = new mongoose.Schema({
   releaseDate: {
     type: Date,
     required: true,
-    validate: [dateLimit, "Release date must be in the past"], // You can adjust or remove this if you want to allow future dates
+    validate: [dateLimit, "Release date must be in the past"], 
   },
   duration: {
     type: Number,

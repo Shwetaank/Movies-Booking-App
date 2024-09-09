@@ -8,6 +8,7 @@ import swaggerOptions from "./swagger/swaggerOptions.js";
 import errorHandler from "./utils/errorHandler.js";
 import adminRouter from "./routes/admin-routes.js";
 import movieRouter from "./routes/movie-routes.js";
+import bookingsRouter from "./routes/booking-routes.js";
 
 // Load environment variables
 dotenv.config();
@@ -24,7 +25,8 @@ app.use(cors());
 // Routes
 app.use(express.json());
 app.use("/admin", adminRouter);
-app.use("/movie", movieRouter)
+app.use("/movie", movieRouter);
+app.use("/booking",bookingsRouter);
 
 // Generate Swagger Spec using swaggerOptions
 const swaggerSpec = swaggerJsdoc(swaggerOptions);
