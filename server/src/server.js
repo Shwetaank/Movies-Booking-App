@@ -26,7 +26,7 @@ app.use(cors());
 app.use(express.json());
 app.use("/admin", adminRouter);
 app.use("/movie", movieRouter);
-app.use("/booking",bookingsRouter);
+app.use("/booking", bookingsRouter);
 
 // Generate Swagger Spec using swaggerOptions
 const swaggerSpec = swaggerJsdoc(swaggerOptions);

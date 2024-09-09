@@ -1,5 +1,7 @@
 import express from "express";
 import {
+  deleteBookingById,
+  getBookingsById,
   getLastBooking,
   newBooking,
   validateBooking,
@@ -9,10 +11,17 @@ const bookingsRouter = express.Router();
 
 /**
  * @swagger
+ * tags:
+ *   name: Bookings
+ *   description: Endpoints for managing movie bookings, including creating, retrieving, and deleting booking records.
+ */
+
+/**
+ * @swagger
  * /booking:
  *   post:
  *     summary: Create a new booking
- *     description: Create a new booking for a movie with the specified details.
+ *     description: Create a new booking for a movie with the specified details. This endpoint allows users to book a movie by providing movie ID, date, seats, and slot details.
  *     tags:
  *       - Bookings
  *     requestBody:
@@ -24,7 +33,7 @@ const bookingsRouter = express.Router();
  *             properties:
  *               movie:
  *                 type: string
- *                 description: The title of the movie to book.
+ *                 description: The ID of the movie to book.
  *               date:
  *                 type: string
  *                 format: date
@@ -120,7 +129,7 @@ const bookingsRouter = express.Router();
  * /booking:
  *   get:
  *     summary: Get the last booking
- *     description: Retrieve the most recent booking made. If no bookings exist, return a message indicating so.
+ *     description: Retrieve the most recent booking made. If no bookings exist, return a message indicating so. This endpoint provides information about the latest booking record.
  *     tags:
  *       - Bookings
  *     responses:
@@ -174,7 +183,113 @@ const bookingsRouter = express.Router();
  *                   example: Internal server error
  */
 
+/**
+ * @swagger
+ * /booking/{id}:
+ *   get:
+ *     summary: Get booking by ID
+ *     description: Retrieve a specific booking by its ID. This endpoint returns details of a booking based on the provided booking ID.
+ *     tags:
+ *       - Bookings
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         description: The ID of the booking to retrieve
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Booking details retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 _id:
+ *                   type: string
+ *                 movie:
+ *                   type: string
+ *                 date:
+ *                   type: string
+ *                   format: date
+ *                 seats:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       seatNumber:
+ *                         type: string
+ *                 slot:
+ *                   type: object
+ *                   properties:
+ *                     label:
+ *                       type: string
+ *                 isBooked:
+ *                   type: boolean
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Internal server error
+ */
+
+/**
+ * @swagger
+ * /booking/{id}:
+ *   delete:
+ *     summary: Delete booking by ID
+ *     description: Delete a specific booking by its ID. This endpoint removes a booking record based on the provided booking ID.
+ *     tags:
+ *       - Bookings
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         description: The ID of the booking to delete
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Booking deleted successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Booking deleted successfully
+ *       404:
+ *         description: Booking not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Booking not found
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Internal server error
+ */
+
 bookingsRouter.post("/", validateBooking, newBooking);
 bookingsRouter.get("/", getLastBooking);
+bookingsRouter.get("/:id", getBookingsById);
+bookingsRouter.delete("/:id", deleteBookingById);
 
 export default bookingsRouter;

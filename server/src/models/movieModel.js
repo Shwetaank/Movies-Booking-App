@@ -24,7 +24,7 @@ const movieSchema = new mongoose.Schema({
   releaseDate: {
     type: Date,
     required: true,
-    validate: [dateLimit, "Release date must be in the past"], 
+    validate: [dateLimit, "Release date must be in the past"],
   },
   duration: {
     type: Number,
@@ -55,12 +55,15 @@ const movieSchema = new mongoose.Schema({
     type: Boolean,
     default: true,
   },
-  bookings: {
-    type: [String], // You can link this to a booking model if needed
-  },
+  bookings: [
+    {
+      type: mongoose.Types.ObjectId,
+      ref: "Booking",
+    },
+  ],
   admin: {
-    type: mongoose.Schema.Types.ObjectId, // Link to an Admin collection
-    ref: "Admin", // Assuming you have an Admin model
+    type: mongoose.Types.ObjectId,
+    ref: "Admin",
     required: true,
   },
 });

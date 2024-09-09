@@ -14,14 +14,14 @@ const dateSetter = (value) => {
 
 const bookingSchema = new mongoose.Schema({
   movie: {
-    type: String,
+    type: mongoose.Types.ObjectId,
+    ref: "Movie",
     required: true,
-    index: true,
   },
   date: {
-    type: String, // Change to String to store date in YYYY-MM-DD format
+    type: String,
     required: true,
-    set: dateSetter, // Apply custom setter
+    set: dateSetter,
   },
   seats: [
     {

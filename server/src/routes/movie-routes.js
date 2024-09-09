@@ -223,10 +223,7 @@ const movieRouter = express.Router();
  *                   example: "Failed to fetch movies"
  *                 error:
  *                   type: string
- */
-
-/**
- * @swagger
+ *
  * /movie/{id}:
  *   get:
  *     summary: Get a specific movie by ID

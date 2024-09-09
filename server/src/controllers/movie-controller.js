@@ -1,11 +1,11 @@
 import jwt from "jsonwebtoken";
 import { validationResult } from "express-validator";
 import Movie from "../models/movieModel.js";
+import mongoose from "mongoose";
+import Admin from "../models/adminModel.js";
 
 // Helper function to format date as YYYY-MM-DD
-const formatDate = (date) => {
-  return date.toISOString().split("T")[0];
-};
+const formatDate = (date) => date.toISOString().split("T")[0];
 
 // Middleware for verifying JWT token
 const verifyToken = (token) => {
@@ -54,7 +54,17 @@ export const addMovie = async (req, res, next) => {
   } = req.body;
 
   // Create and save movie
+  const session = await mongoose.startSession();
   try {
+    session.startTransaction();
+
+    const adminUser = await Admin.findById(adminId).session(session);
+    if (!adminUser) {
+      await session.abortTransaction();
+      session.endSession();
+      return res.status(404).json({ message: "Admin user not found" });
+    }
+
     const movie = new Movie({
       title,
       genre,
@@ -65,15 +75,19 @@ export const addMovie = async (req, res, next) => {
       cast,
       posterUrl,
       featured,
-      admin: adminId, // Link admin to movie
+      admin: adminId,
     });
 
-    const savedMovie = await movie.save();
+    await movie.save({ session });
+    adminUser.addedMovies.push(movie._id);
+    await adminUser.save({ session });
+
+    await session.commitTransaction();
 
     // Format the releaseDate before sending response
     const formattedMovie = {
-      ...savedMovie._doc,
-      releaseDate: formatDate(savedMovie.releaseDate),
+      ...movie._doc,
+      releaseDate: formatDate(movie.releaseDate),
     };
 
     return res.status(201).json({
@@ -81,37 +95,55 @@ export const addMovie = async (req, res, next) => {
       movie: formattedMovie,
     });
   } catch (error) {
-    return res.status(500).json({ message: "Failed to add movie", error });
+    await session.abortTransaction();
+    console.error("Error during movie addition:", error); // Log the error
+    return res
+      .status(500)
+      .json({ message: "Failed to add movie", error: error.message });
+  } finally {
+    session.endSession();
   }
 };
 
 // Function to get all movies
 export const getAllMovies = async (req, res, next) => {
-  let movies;
   try {
-    movies = await Movie.find();
+    const movies = await Movie.find();
+    if (!movies.length) {
+      return res.status(404).json({ message: "No movies found" });
+    }
+    // Format releaseDates before sending response
+    const formattedMovies = movies.map((movie) => ({
+      ...movie._doc,
+      releaseDate: formatDate(movie.releaseDate),
+    }));
+    return res.status(200).json({ movies: formattedMovies });
   } catch (error) {
-    return res.status(500).json({ message: "Failed to fetch movies", error });
+    console.error("Error fetching movies:", error); // Log the error
+    return res
+      .status(500)
+      .json({ message: "Failed to fetch movies", error: error.message });
   }
-  if (!movies) {
-    return res.status(404).json({ message: "No movies found" });
-  }
-  return res.status(200).json({ movies });
 };
 
-//  function to get Movies By id
+// Function to get movie by id
 export const getMoviesById = async (req, res, next) => {
   const id = req.params.id;
-  let movie;
   try {
-    movie = await Movie.findById(id);
+    const movie = await Movie.findById(id);
+    if (!movie) {
+      return res.status(404).json({ message: "Movie not found" });
+    }
+    // Format releaseDate before sending response
+    const formattedMovie = {
+      ...movie._doc,
+      releaseDate: formatDate(movie.releaseDate),
+    };
+    return res.status(200).json({ movie: formattedMovie });
   } catch (error) {
-    return res.status(500).json({ message: "Failed to find movie", error });
+    console.error("Error finding movie:", error); // Log the error
+    return res
+      .status(500)
+      .json({ message: "Failed to find movie", error: error.message });
   }
-
-  if (!movie) {
-    return res.status(404).json({ message: "Movie not found" });
-  }
-
-  return res.status(200).json({ movie });
 };

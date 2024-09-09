@@ -5,9 +5,7 @@ import jwt from "jsonwebtoken";
 
 // Middleware for validation
 export const validateAdmin = [
-  body("email")
-    .isEmail()
-    .withMessage("The email address format is invalid."),
+  body("email").isEmail().withMessage("The email address format is invalid."),
   body("password")
     .isLength({ min: 8 })
     .withMessage("Password must be at least 8 characters long."),
@@ -31,7 +29,8 @@ export const addAdmin = async (req, res, next) => {
     const existingAdmin = await Admin.findOne({ email });
     if (existingAdmin) {
       return res.status(400).json({
-        message: "An account with this email already exists. Please try another email.",
+        message:
+          "An account with this email already exists. Please try another email.",
       });
     }
 
@@ -78,7 +77,10 @@ export const adminLogin = async (req, res, next) => {
     }
 
     // Verify password
-    const isPasswordCorrect = bcrypt.compareSync(password, existingAdmin.password);
+    const isPasswordCorrect = bcrypt.compareSync(
+      password,
+      existingAdmin.password
+    );
     if (!isPasswordCorrect) {
       return res.status(401).json({
         message: "Invalid credentials. Please check your email and password.",
@@ -87,7 +89,7 @@ export const adminLogin = async (req, res, next) => {
 
     // Generate JWT token
     const token = jwt.sign({ id: existingAdmin._id }, process.env.JWT_SECRET, {
-      expiresIn: "7d", 
+      expiresIn: "7d",
     });
 
     // Return success response
@@ -102,4 +104,18 @@ export const adminLogin = async (req, res, next) => {
       error: error.message,
     });
   }
+};
+
+//  get admin function
+export const getAdmin = async (req, res, next) => {
+  let admins;
+  try {
+    admins = await Admin.find();
+  } catch (error) {
+    return console.log("error");
+  }
+  if (!admins) {
+    return res.status(404).json({ message: "No admins found" });
+  }
+  return res.status(200).json({ admins });
 };
