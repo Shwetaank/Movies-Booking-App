@@ -1,7 +1,7 @@
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import axios from "axios";
-import { motion } from "framer-motion";
 import { Card, Button, Badge, Tooltip } from "flowbite-react";
+import { motion } from "framer-motion";
 import LoadingError from "../spinner/LoadingError";
 
 const MovieCard = () => {
@@ -10,6 +10,7 @@ const MovieCard = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [animation, setAnimation] = useState("opacity-100"); // Animation state
   const moviesPerPage = 3;
 
   useEffect(() => {
@@ -29,13 +30,15 @@ const MovieCard = () => {
 
   useEffect(() => {
     const startIndex = (currentPage - 1) * moviesPerPage;
-    setDisplayedMovies(movies.slice(startIndex, startIndex + moviesPerPage));
+    setAnimation("opacity-0"); // Trigger fade-out
+    const timer = setTimeout(() => {
+      setDisplayedMovies(movies.slice(startIndex, startIndex + moviesPerPage));
+      setAnimation("opacity-100"); // Trigger fade-in
+    }, 300); // Duration for fade-out
+    return () => clearTimeout(timer);
   }, [movies, currentPage]);
 
-  const totalPages = useMemo(
-    () => Math.ceil(movies.length / moviesPerPage),
-    [movies]
-  );
+  const totalPages = Math.ceil(movies.length / moviesPerPage);
 
   const handlePageChange = useCallback(
     (pageNumber) => {
@@ -67,18 +70,25 @@ const MovieCard = () => {
     }
 
     return pages.map((page, index) => (
-      <Button
+      <motion.div
         key={index}
-        onClick={() => page !== "..." && handlePageChange(page)}
-        gradientDuoTone="pinkToOrange"
-        className={`font-extrabold text-purple-700 px-2 py-1 md:px-4 md:py-2 ${
-          page === currentPage ? "bg-blue-700" : "bg-blue-500"
-        }`}
-        disabled={page === "..." || page === currentPage}
-        aria-label={`Go to page ${page}`}
+        whileHover={{ scale: 1.1 }}
+        transition={{ type: "spring", stiffness: 300 }}
       >
-        {page}
-      </Button>
+        <Button
+          onClick={() => page !== "..." && handlePageChange(page)}
+          gradientDuoTone="pinkToOrange"
+          className={`font-extrabold text-purple-700 px-2 py-1 md:px-4 md:py-2 w-20 md:w-auto transition-transform transform duration-300 hover:scale-110 hover:bg-gradient-to-r hover:from-purple-400 hover:to-pink-400 ${
+            page === currentPage
+              ? "bg-blue-700"
+              : "bg-gradient-to-r from-pink-400 to-orange-400 hover:shadow-lg hover:shadow-pink-500/50"
+          }`}
+          disabled={page === "..." || page === currentPage}
+          aria-label={`Go to page ${page}`}
+        >
+          {page}
+        </Button>
+      </motion.div>
     ));
   };
 
@@ -94,16 +104,13 @@ const MovieCard = () => {
   };
 
   return (
-    <div className="w-full h-full flex flex-col items-center p-4 perspective-1000">
+    <div className="w-full h-full flex flex-col items-center p-4">
       <LoadingError loading={loading} error={error} />
 
       {!loading && !error && (
         <>
-          <motion.div
-            className="w-full flex flex-wrap justify-center gap-6"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5 }}
+          <div
+            className={`w-full flex flex-wrap justify-center gap-6 ${animation}`}
           >
             {displayedMovies.map((movie) => {
               const genres =
@@ -115,112 +122,146 @@ const MovieCard = () => {
                 <motion.div
                   key={movie._id}
                   className="w-full sm:w-80 md:w-96 lg:w-96 p-4"
-                  initial={{ y: 20, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  transition={{ duration: 0.5 }}
+                  whileHover={{ scale: 1.05 }}
+                  transition={{ type: "spring", stiffness: 300 }}
                 >
-                  <motion.div
-                    className="rounded-lg shadow-lg bg-gray-200 dark:bg-gray-800"
-                    style={{ perspective: 1000 }}
-                    whileHover={{ rotateY: 360 }}
-                    transition={{ type: "spring", stiffness: 100, damping: 10 }}
-                  >
-                    <Card>
-                      <img
-                        src={movie.posterUrl}
-                        alt={movie.title}
-                        className="w-full h-52 object-fill rounded-xl overflow-hidden transition-transform duration-500 transform hover:scale-105 cursor-pointer"
-                      />
-                      <div className="p-4">
-                        <h5 className="text-xl font-bold text-center text-purple-700 mb-1">
-                          {movie.title}
-                        </h5>
-                        <p className="text-justify mb-2">{movie.description}</p>
-                        <div className="flex flex-wrap justify-center gap-6 mb-4">
-                          {genres.map((g, index) => (
-                            <Badge
-                              key={index}
-                              color="purple"
-                              className="cursor-pointer transition-transform transform hover:scale-105 hover:bg-purple-200"
-                            >
-                              {g}
-                            </Badge>
-                          ))}
-                        </div>
-                        <div className="flex justify-center">
-                          <p className="text-sm text-center mb-2">
-                            <strong className="font-extrabold text-purple-800">
-                              Cast :-{" "}
-                            </strong>
-                            {movie.cast.join(", ")}
-                          </p>
-                        </div>
-                        <div className="flex">
-                          <Tooltip content="Release Date" placement="bottom">
-                            <p className="text-sm mb-2 font-semibold">
-                              {formatDate(movie.releaseDate)}
-                            </p>
-                          </Tooltip>
-                        </div>
-                        <p className="text-sm flex justify-end mb-2">
-                          <strong> Duration :- </strong>
-                          <span className="text-purple-700 font-bold ml-1">
-                            {formatDuration(movie.duration)} Hr
-                          </span>
+                  <Card className="flex flex-col relative cursor-pointer bg-[linear-gradient(to_bottom,_var(--tw-gradient-stops))] from-gray-200 to-gray-700 dark:from-gray-700 dark:to-gray-900">
+                    <img
+                      src={movie.posterUrl}
+                      alt={movie.title}
+                      loading="lazy"
+                      className="w-full h-48  object-fill rounded-xl"
+                    />
+                    <div className="p-4 flex-1 flex flex-col">
+                      <h5 className="text-xl font-bold text-center text-purple-700">
+                        {movie.title}
+                      </h5>
+                      <p className="text-justify mb-2 flex-1">
+                        {movie.description}
+                      </p>
+                      <div className="flex flex-wrap justify-center gap-6 mb-4">
+                        {genres.map((g, index) => (
+                          <Badge
+                            key={index}
+                            color="purple"
+                            className="cursor-pointer transition-transform transform hover:scale-105 hover:bg-purple-200"
+                          >
+                            {g}
+                          </Badge>
+                        ))}
+                      </div>
+                      <div className="flex justify-center">
+                        <p className="text-sm text-center mb-2">
+                          <strong className="font-extrabold text-purple-800">
+                            Cast :-{" "}
+                          </strong>
+                          {movie.cast.join(", ")}
                         </p>
                       </div>
-                    </Card>
-                  </motion.div>
+                      <div className="flex">
+                        <Tooltip content="Release Date" placement="bottom">
+                          <p className="text-sm mb-2 font-semibold">
+                            {formatDate(movie.releaseDate)}
+                          </p>
+                        </Tooltip>
+                      </div>
+                      <p className="text-sm flex justify-end mb-2">
+                        <strong> Duration :- </strong>
+                        <span className="text-purple-700 font-bold ml-1">
+                          {formatDuration(movie.duration)} Hr
+                        </span>
+                      </p>
+                      <div className="flex justify-center items-center mt-5">
+                        <motion.div
+                          whileHover={{ scale: 1.1 }}
+                          transition={{ type: "spring", stiffness: 300 }}
+                        >
+                          <Button
+                            gradientDuoTone="pinkToOrange"
+                            className="shadow-md font-bold text-purple-700 hover:shadow-pink-500/80 transition duration-300 ease-in-out animate-pulse"
+                          >
+                            Book Movie Now
+                          </Button>
+                        </motion.div>
+                      </div>
+                    </div>
+                  </Card>
                 </motion.div>
               );
             })}
-          </motion.div>
+          </div>
 
-          {/* Pagination Buttons */}
-          <motion.div
-            className="flex flex-wrap justify-center gap-2 mt-6 w-full md:gap-4"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.6 }}
-          >
-            <Button
-              onClick={() => handlePageChange(1)}
-              disabled={currentPage === 1}
-              gradientDuoTone="pinkToOrange"
-              className="font-extrabold text-purple-700 px-2 py-1 md:px-4 md:py-2 w-20 md:w-auto"
-              aria-label="Go to first page"
+          <div className="flex flex-wrap justify-center gap-2 mt-10 w-full md:gap-4">
+            <motion.div
+              whileHover={{ scale: 1.1 }}
+              transition={{ type: "spring", stiffness: 300 }}
             >
-              First
-            </Button>
-            <Button
-              onClick={() => handlePageChange(currentPage - 1)}
-              disabled={currentPage === 1}
-              gradientDuoTone="pinkToOrange"
-              className="font-extrabold text-purple-700 px-2 py-1 md:px-4 md:py-2 w-20 md:w-auto"
-              aria-label="Go to previous page"
+              <Button
+                onClick={() => handlePageChange(1)}
+                disabled={currentPage === 1}
+                className={`font-extrabold text-purple-700 px-2 py-1 md:px-4 md:py-2 w-20 md:w-auto transition-transform transform duration-300 hover:scale-110 hover:bg-gradient-to-r hover:from-purple-400 hover:to-pink-400 ${
+                  currentPage === 1
+                    ? "bg-gray-400"
+                    : "bg-gradient-to-r from-pink-400 to-orange-400 hover:shadow-lg hover:shadow-pink-500/50"
+                }`}
+                aria-label="Go to first page"
+              >
+                First
+              </Button>
+            </motion.div>
+            <motion.div
+              whileHover={{ scale: 1.1 }}
+              transition={{ type: "spring", stiffness: 300 }}
             >
-              Previous
-            </Button>
+              <Button
+                onClick={() => handlePageChange(currentPage - 1)}
+                disabled={currentPage === 1}
+                className={`font-extrabold text-purple-700 px-2 py-1 md:px-4 md:py-2 w-20 md:w-auto transition-transform transform duration-300 hover:scale-110 hover:bg-gradient-to-r hover:from-purple-400 hover:to-pink-400 ${
+                  currentPage === 1
+                    ? "bg-gray-400"
+                    : "bg-gradient-to-r from-pink-400 to-orange-400 hover:shadow-lg hover:shadow-pink-500/50"
+                }`}
+                aria-label="Go to previous page"
+              >
+                Previous
+              </Button>
+            </motion.div>
             {renderPageNumbers()}
-            <Button
-              onClick={() => handlePageChange(currentPage + 1)}
-              disabled={currentPage === totalPages}
-              gradientDuoTone="pinkToOrange"
-              className="font-extrabold text-purple-700 px-2 py-1 md:px-4 md:py-2 w-20 md:w-auto"
-              aria-label="Go to next page"
+            <motion.div
+              whileHover={{ scale: 1.1 }}
+              transition={{ type: "spring", stiffness: 300 }}
             >
-              Next
-            </Button>
-            <Button
-              onClick={() => handlePageChange(totalPages)}
-              disabled={currentPage === totalPages}
-              gradientDuoTone="pinkToOrange"
-              className="font-extrabold text-purple-700 px-2 py-1 md:px-4 md:py-2 w-20 md:w-auto"
-              aria-label="Go to last page"
+              <Button
+                onClick={() => handlePageChange(currentPage + 1)}
+                disabled={currentPage === totalPages}
+                className={`font-extrabold text-purple-700 px-2 py-1 md:px-4 md:py-2 w-20 md:w-auto transition-transform transform duration-300 hover:scale-110 hover:bg-gradient-to-r hover:from-purple-400 hover:to-pink-400 ${
+                  currentPage === totalPages
+                    ? "bg-gray-400"
+                    : "bg-gradient-to-r from-pink-400 to-orange-400 hover:shadow-lg hover:shadow-pink-500/50"
+                }`}
+                aria-label="Go to next page"
+              >
+                Next
+              </Button>
+            </motion.div>
+            <motion.div
+              whileHover={{ scale: 1.1 }}
+              transition={{ type: "spring", stiffness: 300 }}
             >
-              Last
-            </Button>
-          </motion.div>
+              <Button
+                onClick={() => handlePageChange(totalPages)}
+                disabled={currentPage === totalPages}
+                className={`font-extrabold text-purple-700 px-2 py-1 md:px-4 md:py-2 w-20 md:w-auto transition-transform transform duration-300 hover:scale-110 hover:bg-gradient-to-r hover:from-purple-400 hover:to-pink-400 ${
+                  currentPage === totalPages
+                    ? "bg-gray-400"
+                    : "bg-gradient-to-r from-pink-400 to-orange-400 hover:shadow-lg hover:shadow-pink-500/50"
+                }`}
+                aria-label="Go to last page"
+              >
+                Last
+              </Button>
+            </motion.div>
+          </div>
         </>
       )}
     </div>
