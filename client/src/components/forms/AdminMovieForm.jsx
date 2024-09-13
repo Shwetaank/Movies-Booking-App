@@ -10,7 +10,7 @@ import {
 } from "flowbite-react";
 import axios from "axios";
 
-const AdminMovieForm = ({ onLogout }) => {
+const AdminMovieForm = ({ onLogout, movie, onUpdateMovie }) => {
   const [movieTitle, setMovieTitle] = useState("");
   const [movieDescription, setMovieDescription] = useState("");
   const [movieGenre, setMovieGenre] = useState("");
@@ -28,11 +28,24 @@ const AdminMovieForm = ({ onLogout }) => {
       const timer = setTimeout(() => {
         setMessage(null);
         setMessageType("");
-      }, 10000);
+      }, 6000);
 
       return () => clearTimeout(timer);
     }
   }, [message]);
+
+  useEffect(() => {
+    if (movie) {
+      setMovieTitle(movie.title || "");
+      setMovieDescription(movie.description || "");
+      setMovieGenre((movie.genre || []).join(", "));
+      setReleaseDate(movie.releaseDate || "");
+      setMovieDuration(movie.duration || "");
+      setMovieDirector(movie.director || "");
+      setMovieCast((movie.cast || []).join(", "));
+      setPosterUrl(movie.posterUrl || "");
+    }
+  }, [movie]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -62,14 +75,30 @@ const AdminMovieForm = ({ onLogout }) => {
     };
 
     try {
-      await axios.post("http://localhost:8080/movie", movieData, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
-        },
-      });
+      if (movie) {
+        // Update existing movie
+        await axios.patch(
+          `http://localhost:8080/movie/${movie._id}`,
+          movieData,
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
+            },
+          }
+        );
+        setMessage("🎉 Movie updated successfully!");
+      } else {
+        // Add new movie
+        await axios.post("http://localhost:8080/movie", movieData, {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
+          },
+        });
+        setMessage("🎉 Movie added successfully!");
+      }
 
-      setMessage("🎉 Movie added successfully!");
       setMessageType("success");
 
       // Reset form fields
@@ -81,11 +110,12 @@ const AdminMovieForm = ({ onLogout }) => {
       setMovieDirector("");
       setMovieCast("");
       setPosterUrl("");
+      onUpdateMovie && onUpdateMovie(movieData); // Notify parent component if needed
     } catch (err) {
       console.error(err);
       setMessage(
         err.response?.data?.message ||
-          "⚠️ Failed to add movie. Please try again."
+          "⚠️ Failed to save movie. Please try again."
       );
       setMessageType("error");
     } finally {
@@ -94,26 +124,31 @@ const AdminMovieForm = ({ onLogout }) => {
   };
 
   return (
-    <div className="w-full h-auto py-16 px-4 sm:px-8 ">
-      <div className="max-w-4xl mx-auto bg-white dark:bg-gray-800 p-8 rounded-lg shadow-lg">
+    <div className="w-full h-auto py-16 px-4 sm:px-8">
+      <div
+        className="max-w-4xl mx-auto bg-gradient-to-r from-gray-200 via-gray-300 to-gray-400
+        dark:bg-gradient-to-r dark:from-gray-800 dark:via-gray-700 dark:to-gray-600 p-8 rounded-lg shadow-lg"
+      >
         <h2 className="text-3xl font-bold text-center mb-6 text-indigo-700">
-          🎬 Add New Movie
+          {movie ? "🎬 Update Your Movie" : "🎬 Add New Movie"}
         </h2>
 
         {/* Toast notifications */}
         {message && (
-          <Toast
-            className={`mb-4 ${
-              messageType === "success"
-                ? "bg-green-100 text-green-800"
-                : "bg-red-100 text-red-800"
-            }`}
-            show={true}
-          >
-            <div className="flex items-center">
-              <span className="ml-2">{message}</span>
-            </div>
-          </Toast>
+          <div className="w-full flex justify-center">
+            <Toast
+              className={`mb-4 ${
+                messageType === "success"
+                  ? "bg-green-100 text-green-800"
+                  : "bg-red-100 text-red-800"
+              }`}
+              show={true}
+            >
+              <div className="flex items-center">
+                <span className="ml-2">{message}</span>
+              </div>
+            </Toast>
+          </div>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -227,17 +262,23 @@ const AdminMovieForm = ({ onLogout }) => {
           <Button
             type="submit"
             gradientDuoTone="pinkToOrange"
-            className="w-full mt-4"
+            className="w-full font-bold mt-4"
             disabled={loading}
           >
-            {loading ? <Spinner size="sm" /> : "Add Movie"}
+            {loading ? (
+              <Spinner size="sm" />
+            ) : movie ? (
+              "Update Movie"
+            ) : (
+              "Add Movie"
+            )}
           </Button>
         </form>
 
         <Button
           type="button"
-          color="failure"
-          className="mt-4 w-full"
+          gradientDuoTone="purpleToPink"
+          className="mt-4 font-bold w-full"
           onClick={onLogout}
         >
           Logout
@@ -249,6 +290,8 @@ const AdminMovieForm = ({ onLogout }) => {
 
 AdminMovieForm.propTypes = {
   onLogout: PropTypes.func.isRequired,
+  movie: PropTypes.object,
+  onUpdateMovie: PropTypes.func,
 };
 
 export default AdminMovieForm;

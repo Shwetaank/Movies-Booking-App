@@ -10,7 +10,7 @@ const MovieCard = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [animation, setAnimation] = useState("opacity-100"); // Animation state
+  const [animation, setAnimation] = useState("opacity-100");
   const moviesPerPage = 3;
 
   useEffect(() => {

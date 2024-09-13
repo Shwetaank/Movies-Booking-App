@@ -1,7 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
 import PropTypes from "prop-types";
-import { Button, TextInput, Label } from "flowbite-react";
+import { Button, TextInput, Label, Toast } from "flowbite-react";
 import { useNavigate } from "react-router-dom";
 import { HiMail } from "react-icons/hi";
 import { RiLockPasswordFill } from "react-icons/ri";
@@ -12,6 +12,7 @@ const AdminAuth = ({ onLoginSuccess }) => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [showToast, setShowToast] = useState(false); 
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
@@ -32,8 +33,14 @@ const AdminAuth = ({ onLoginSuccess }) => {
       });
 
       localStorage.setItem("adminToken", response.data.token);
-      onLoginSuccess();
-      navigate("/admin");
+
+      // Show toast message and delay navigation to allow the toast to display
+      setShowToast(true);
+      setTimeout(() => {
+        setShowToast(false);
+        onLoginSuccess();
+        navigate("/admin");
+      }, 1500); // 1.5 second delay to show toast before navigation
     } catch (err) {
       console.error(err);
       if (err.response) {
@@ -120,6 +127,21 @@ const AdminAuth = ({ onLoginSuccess }) => {
             {loading ? "Please Wait..." : "Log In"}
           </Button>
         </form>
+
+        {/* Display Toast when login is successful */}
+        {showToast && (
+          <div className="absolute top-5 right-5">
+            <Toast>
+              <div className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-green-100 text-green-500">
+                🎉
+              </div>
+              <div className="ml-3 text-sm font-normal">
+                Welcome back, Admin!
+              </div>
+              <Toast.Toggle />
+            </Toast>
+          </div>
+        )}
       </motion.div>
     </motion.div>
   );
