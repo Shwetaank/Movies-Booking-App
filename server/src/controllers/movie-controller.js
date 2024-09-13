@@ -20,6 +20,7 @@ const verifyToken = (token) => {
   });
 };
 
+//  Functions to add Movies
 export const addMovie = async (req, res, next) => {
   // Check validation errors from express-validator
   const errors = validationResult(req);
@@ -145,5 +146,106 @@ export const getMoviesById = async (req, res, next) => {
     return res
       .status(500)
       .json({ message: "Failed to find movie", error: error.message });
+  }
+};
+
+// function to delete a movie by its id
+export const deleteMovie = async (req, res, next) => {
+  const movieId = req.params.id;
+  const token = req.headers.authorization?.split(" ")[1];
+
+  if (!token) {
+    return res.status(401).json({ message: "No token provided" });
+  }
+
+  let adminId;
+  try {
+    adminId = await verifyToken(token);
+  } catch (err) {
+    return res.status(401).json({ message: err.message });
+  }
+
+  try {
+    const movie = await Movie.findById(movieId);
+    if (!movie) {
+      return res.status(404).json({ message: "Movie not found" });
+    }
+
+    if (movie.admin.toString() !== adminId) {
+      return res.status(403).json({ message: "Unauthorized action" });
+    }
+
+    await Movie.findByIdAndDelete(movieId);
+    return res.status(200).json({ message: "Movie deleted successfully" });
+  } catch (err) {
+    return res
+      .status(500)
+      .json({ message: "Failed to delete movie", error: err.message });
+  }
+};
+
+// function to  update a movie by its id
+export const updateMovie = async (req, res, next) => {
+  const movieId = req.params.id;
+  const token = req.headers.authorization?.split(" ")[1];
+
+  if (!token) {
+    return res.status(401).json({ message: "No token provided" });
+  }
+
+  let adminId;
+  try {
+    adminId = await verifyToken(token);
+  } catch (err) {
+    return res.status(401).json({ message: err.message });
+  }
+
+  const {
+    title,
+    genre,
+    releaseDate,
+    duration,
+    description,
+    director,
+    cast,
+    posterUrl,
+    featured,
+  } = req.body;
+
+  try {
+    const movie = await Movie.findById(movieId);
+    if (!movie) {
+      return res.status(404).json({ message: "Movie not found" });
+    }
+
+    if (movie.admin.toString() !== adminId) {
+      return res.status(403).json({ message: "Unauthorized action" });
+    }
+
+    // Update movie details
+    movie.title = title || movie.title;
+    movie.genre = genre || movie.genre;
+    movie.releaseDate = releaseDate ? new Date(releaseDate) : movie.releaseDate;
+    movie.duration = duration || movie.duration;
+    movie.description = description || movie.description;
+    movie.director = director || movie.director;
+    movie.cast = cast || movie.cast;
+    movie.posterUrl = posterUrl || movie.posterUrl;
+    movie.featured = featured !== undefined ? featured : movie.featured;
+
+    await movie.save();
+
+    const formattedMovie = {
+      ...movie._doc,
+      releaseDate: formatDate(movie.releaseDate),
+    };
+
+    return res
+      .status(200)
+      .json({ message: "Movie updated successfully", movie: formattedMovie });
+  } catch (err) {
+    return res
+      .status(500)
+      .json({ message: "Failed to update movie", error: err.message });
   }
 };

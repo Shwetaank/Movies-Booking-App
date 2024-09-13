@@ -1,6 +1,13 @@
-import { useState } from "react";
-import PropTypes from "prop-types"; // Import PropTypes
-import { Button, TextInput, Label, Textarea } from "flowbite-react";
+import { useState, useEffect } from "react";
+import PropTypes from "prop-types";
+import {
+  Button,
+  TextInput,
+  Label,
+  Textarea,
+  Spinner,
+  Toast,
+} from "flowbite-react";
 import axios from "axios";
 
 const AdminMovieForm = ({ onLogout }) => {
@@ -8,139 +15,225 @@ const AdminMovieForm = ({ onLogout }) => {
   const [movieDescription, setMovieDescription] = useState("");
   const [movieGenre, setMovieGenre] = useState("");
   const [releaseDate, setReleaseDate] = useState("");
-  const [moviePoster, setMoviePoster] = useState(null);
-  const [success, setSuccess] = useState(null);
-  const [error, setError] = useState(null);
+  const [movieDuration, setMovieDuration] = useState("");
+  const [movieDirector, setMovieDirector] = useState("");
+  const [movieCast, setMovieCast] = useState("");
+  const [posterUrl, setPosterUrl] = useState("");
+  const [message, setMessage] = useState(null);
+  const [messageType, setMessageType] = useState("");
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (message) {
+      const timer = setTimeout(() => {
+        setMessage(null);
+        setMessageType("");
+      }, 10000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [message]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setError(null);
-    setSuccess(null);
+    setMessage(null);
+    setMessageType("");
 
-    const formData = new FormData();
-    formData.append("title", movieTitle);
-    formData.append("description", movieDescription);
-    formData.append("genre", movieGenre);
-    formData.append("releaseDate", releaseDate);
-    if (moviePoster) {
-      formData.append("poster", moviePoster);
-    }
+    const genres = movieGenre
+      .split(",")
+      .map((genre) => genre.trim())
+      .filter(Boolean);
+    const cast = movieCast
+      .split(",")
+      .map((member) => member.trim())
+      .filter(Boolean);
+
+    const movieData = {
+      title: movieTitle,
+      genre: genres,
+      releaseDate,
+      duration: parseInt(movieDuration, 10),
+      description: movieDescription,
+      director: movieDirector,
+      cast: cast,
+      posterUrl,
+      featured: true,
+    };
 
     try {
-      await axios.post("http://localhost:8080/admin/movies", formData, {
+      await axios.post("http://localhost:8080/movie", movieData, {
         headers: {
-          "Content-Type": "multipart/form-data",
+          "Content-Type": "application/json",
           Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
         },
       });
 
-      setSuccess("Movie added successfully!");
+      setMessage("🎉 Movie added successfully!");
+      setMessageType("success");
+
       // Reset form fields
       setMovieTitle("");
       setMovieDescription("");
       setMovieGenre("");
       setReleaseDate("");
-      setMoviePoster(null);
+      setMovieDuration("");
+      setMovieDirector("");
+      setMovieCast("");
+      setPosterUrl("");
     } catch (err) {
-      console.error(err); // Log error for debugging
-      setError(
-        err.response?.data?.message || "Failed to add movie. Please try again."
+      console.error(err);
+      setMessage(
+        err.response?.data?.message ||
+          "⚠️ Failed to add movie. Please try again."
       );
+      setMessageType("error");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50">
-      <div className="w-full max-w-lg p-8 bg-white shadow-lg rounded-lg">
-        <h2 className="text-2xl font-bold text-center mb-6">Add New Movie</h2>
+    <div className="w-full h-auto py-16 px-4 sm:px-8 ">
+      <div className="max-w-4xl mx-auto bg-white dark:bg-gray-800 p-8 rounded-lg shadow-lg">
+        <h2 className="text-3xl font-bold text-center mb-6 text-indigo-700">
+          🎬 Add New Movie
+        </h2>
 
-        {/* Display success or error messages */}
-        {success && (
-          <p className="text-green-500 text-center mb-4">{success}</p>
-        )}
-        {error && <p className="text-red-500 text-center mb-4">{error}</p>}
-
-        {/* Movie Form */}
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <div className="mb-2 block">
-              <Label htmlFor="movieTitle" value="Movie Title" />
+        {/* Toast notifications */}
+        {message && (
+          <Toast
+            className={`mb-4 ${
+              messageType === "success"
+                ? "bg-green-100 text-green-800"
+                : "bg-red-100 text-red-800"
+            }`}
+            show={true}
+          >
+            <div className="flex items-center">
+              <span className="ml-2">{message}</span>
             </div>
-            <TextInput
-              id="movieTitle"
-              type="text"
-              placeholder="Enter movie title"
-              value={movieTitle}
-              onChange={(e) => setMovieTitle(e.target.value)}
-              required
-            />
+          </Toast>
+        )}
+
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Left Side: Title, Genre, Release Date */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="movieTitle" value="Movie Title" />
+              <TextInput
+                id="movieTitle"
+                type="text"
+                placeholder="Enter movie title"
+                value={movieTitle}
+                onChange={(e) => setMovieTitle(e.target.value)}
+                required
+                className="mt-2 border-gray-300 dark:border-gray-600"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="releaseDate" value="Release Date" />
+              <TextInput
+                id="releaseDate"
+                type="date"
+                value={releaseDate}
+                onChange={(e) => setReleaseDate(e.target.value)}
+                className="mt-2 border-gray-300 dark:border-gray-600"
+              />
+            </div>
           </div>
 
-          <div>
-            <div className="mb-2 block">
-              <Label htmlFor="movieDescription" value="Movie Description" />
+          {/* Middle: Duration, Director */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="movieDuration" value="Duration (minutes)" />
+              <TextInput
+                id="movieDuration"
+                type="number"
+                placeholder="Enter duration"
+                value={movieDuration}
+                onChange={(e) => setMovieDuration(e.target.value)}
+                className="mt-2 border-gray-300 dark:border-gray-600"
+              />
             </div>
+
+            <div>
+              <Label htmlFor="movieDirector" value="Director" />
+              <TextInput
+                id="movieDirector"
+                type="text"
+                placeholder="Enter director name"
+                value={movieDirector}
+                onChange={(e) => setMovieDirector(e.target.value)}
+                className="mt-2 border-gray-300 dark:border-gray-600"
+              />
+            </div>
+          </div>
+
+          {/* Right Side: Description */}
+          <div>
+            <Label htmlFor="movieDescription" value="Movie Description" />
             <Textarea
               id="movieDescription"
-              placeholder="Enter movie description"
+              placeholder="Enter description"
               value={movieDescription}
               onChange={(e) => setMovieDescription(e.target.value)}
               required
+              className="mt-2 border-gray-300 dark:border-gray-600"
             />
           </div>
 
-          <div>
-            <div className="mb-2 block">
-              <Label htmlFor="movieGenre" value="Movie Genre" />
+          {/* Lower: Genre, Cast, Poster URL */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div>
+              <Label htmlFor="movieGenre" value="Genre (comma-separated)" />
+              <TextInput
+                id="movieGenre"
+                type="text"
+                placeholder="Enter genre(s)"
+                value={movieGenre}
+                onChange={(e) => setMovieGenre(e.target.value)}
+                className="mt-2 border-gray-300 dark:border-gray-600"
+              />
             </div>
-            <TextInput
-              id="movieGenre"
-              type="text"
-              placeholder="Enter movie genre"
-              value={movieGenre}
-              onChange={(e) => setMovieGenre(e.target.value)}
-            />
-          </div>
 
-          <div>
-            <div className="mb-2 block">
-              <Label htmlFor="releaseDate" value="Release Date" />
+            <div>
+              <Label htmlFor="movieCast" value="Cast (comma-separated)" />
+              <TextInput
+                id="movieCast"
+                type="text"
+                placeholder="Enter cast members"
+                value={movieCast}
+                onChange={(e) => setMovieCast(e.target.value)}
+                className="mt-2 border-gray-300 dark:border-gray-600"
+              />
             </div>
-            <TextInput
-              id="releaseDate"
-              type="date"
-              value={releaseDate}
-              onChange={(e) => setReleaseDate(e.target.value)}
-            />
-          </div>
 
-          <div>
-            <div className="mb-2 block">
-              <Label htmlFor="moviePoster" value="Movie Poster" />
+            <div>
+              <Label htmlFor="posterUrl" value="Poster URL" />
+              <TextInput
+                id="posterUrl"
+                type="text"
+                placeholder="Enter poster URL"
+                value={posterUrl}
+                onChange={(e) => setPosterUrl(e.target.value)}
+                className="mt-2 border-gray-300 dark:border-gray-600"
+              />
             </div>
-            <input
-              id="moviePoster"
-              type="file"
-              accept="image/*"
-              onChange={(e) => setMoviePoster(e.target.files[0])}
-            />
           </div>
 
+          {/* Submit Button */}
           <Button
             type="submit"
-            gradientMonochrome="info"
-            className="w-full"
+            gradientDuoTone="pinkToOrange"
+            className="w-full mt-4"
             disabled={loading}
           >
-            {loading ? "Adding Movie..." : "Add Movie"}
+            {loading ? <Spinner size="sm" /> : "Add Movie"}
           </Button>
         </form>
 
-        {/* Logout Button */}
         <Button
           type="button"
           color="failure"

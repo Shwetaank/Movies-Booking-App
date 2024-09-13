@@ -58,12 +58,13 @@ const AdminAuth = ({ onLoginSuccess }) => {
       transition={{ duration: 0.5 }}
     >
       <motion.div
-        className="w-full max-w-md p-10 shadow-lg rounded-lg"
+        className="w-full  p-10 shadow-xl rounded-xl bg-gradient-to-r from-gray-200 via-gray-300 to-gray-400
+        dark:bg-gradient-to-r dark:from-gray-800 dark:via-gray-700 dark:to-gray-600"
         initial={{ scale: 0.9 }}
         animate={{ scale: 1 }}
         transition={{ duration: 0.3 }}
       >
-        <h2 className="text-3xl font-semibold text-center text-purple-700 mb-6">
+        <h2 className="text-3xl font-semibold text-center text-purple-700 dark:text-purple-200 mb-6">
           Admin Panel Login
         </h2>
 
