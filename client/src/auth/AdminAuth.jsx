@@ -94,7 +94,7 @@ const AdminAuth = ({ onLoginSuccess }) => {
               required
               color="success"
               shadow
-              className="pl-1" // Adds padding to ensure text doesn't overlap with the icon
+              className="pl-1" 
             />
           </div>
 
@@ -115,7 +115,7 @@ const AdminAuth = ({ onLoginSuccess }) => {
               required
               shadow
               color="success"
-              className="pl-1" // Adds padding to ensure text doesn't overlap with the icon
+              className="pl-1" 
             />
           </div>
 
