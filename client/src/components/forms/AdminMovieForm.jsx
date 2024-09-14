@@ -78,7 +78,7 @@ const AdminMovieForm = ({ onLogout, movie, onUpdateMovie }) => {
       if (movie) {
         // Update existing movie
         await axios.patch(
-          `http://localhost:8080/movie/${movie._id}`,
+          `https://movies-booking-app.onrender.com/movie/${movie._id}`,
           movieData,
           {
             headers: {
@@ -90,12 +90,16 @@ const AdminMovieForm = ({ onLogout, movie, onUpdateMovie }) => {
         setMessage("🎉 Movie updated successfully!");
       } else {
         // Add new movie
-        await axios.post("http://localhost:8080/movie", movieData, {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
-          },
-        });
+        await axios.post(
+          "https://movies-booking-app.onrender.com/movie",
+          movieData,
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
+            },
+          }
+        );
         setMessage("🎉 Movie added successfully!");
       }
 

@@ -17,7 +17,7 @@ const MovieManagement = ({ onLogout }) => {
   const fetchMovies = async () => {
     setLoading(true);
     try {
-      const response = await axios.get("http://localhost:8080/movie", {
+      const response = await axios.get("https://movies-booking-app.onrender.com/movie", {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
         },
@@ -40,11 +40,14 @@ const MovieManagement = ({ onLogout }) => {
   const handleDelete = async (movieId) => {
     setLoading(true);
     try {
-      await axios.delete(`http://localhost:8080/movie/${movieId}`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
-        },
-      });
+      await axios.delete(
+        `https://movies-booking-app.onrender.com/movie/${movieId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
+          },
+        }
+      );
       setMovies((prevMovies) =>
         prevMovies.filter((movie) => movie._id !== movieId)
       );

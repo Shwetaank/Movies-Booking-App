@@ -18,12 +18,14 @@ const LastBooking = () => {
     const fetchMoviesAndBooking = async () => {
       try {
         // Fetch movies
-        const moviesResponse = await axios.get("http://localhost:8080/movie");
+        const moviesResponse = await axios.get(
+          "https://movies-booking-app.onrender.com/movie"
+        );
         setMovies(moviesResponse.data.movies);
 
         // Fetch last booking
         const bookingResponse = await axios.get(
-          "http://localhost:8080/booking"
+          "https://movies-booking-app.onrender.com/booking"
         );
         setLastBooking(bookingResponse.data);
       } catch (err) {
@@ -39,9 +41,11 @@ const LastBooking = () => {
 
   const handleDelete = async () => {
     try {
-      await axios.delete(`http://localhost:8080/booking/${bookingIdToDelete}`);
-      setLastBooking(null); // Clear the booking data after deletion
-      setShowModal(false); // Close the modal
+      await axios.delete(
+        `https://movies-booking-app.onrender.com/booking/${bookingIdToDelete}`
+      );
+      setLastBooking(null); 
+      setShowModal(false); 
     } catch (err) {
       console.error("Error deleting booking:", err);
       setError("❌ Failed to delete booking.");

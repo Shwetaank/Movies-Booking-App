@@ -40,7 +40,7 @@ const BookingForm = ({ onSuccess }) => {
   useEffect(() => {
     const fetchMovies = async () => {
       try {
-        const { data } = await axios.get("http://localhost:8080/movie/");
+        const { data } = await axios.get("https://movies-booking-app.onrender.com/movie/");
         setMovies(data.movies);
       } catch (error) {
         console.error("Error fetching movies:", error);
@@ -83,7 +83,7 @@ const BookingForm = ({ onSuccess }) => {
     };
 
     try {
-      await axios.post("http://localhost:8080/booking", bookingData, {
+      await axios.post("https://movies-booking-app.onrender.com/booking", bookingData, {
         headers: {
           "Content-Type": "application/json",
         },

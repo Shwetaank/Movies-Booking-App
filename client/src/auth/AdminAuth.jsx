@@ -27,20 +27,23 @@ const AdminAuth = ({ onLoginSuccess }) => {
     }
 
     try {
-      const response = await axios.post("http://localhost:8080/admin/login", {
-        email,
-        password,
-      });
+      const response = await axios.post(
+        "https://movies-booking-app.onrender.com/admin/login",
+        {
+          email,
+          password,
+        }
+      );
 
       localStorage.setItem("adminToken", response.data.token);
 
-      // Show toast message and delay navigation to allow the toast to display
+      
       setShowToast(true);
       setTimeout(() => {
         setShowToast(false);
         onLoginSuccess();
         navigate("/admin");
-      }, 1500); // 1.5 second delay to show toast before navigation
+      }, 1500); 
     } catch (err) {
       console.error(err);
       if (err.response) {
@@ -94,7 +97,7 @@ const AdminAuth = ({ onLoginSuccess }) => {
               required
               color="success"
               shadow
-              className="pl-1" 
+              className="pl-1"
             />
           </div>
 
@@ -115,7 +118,7 @@ const AdminAuth = ({ onLoginSuccess }) => {
               required
               shadow
               color="success"
-              className="pl-1" 
+              className="pl-1"
             />
           </div>
 

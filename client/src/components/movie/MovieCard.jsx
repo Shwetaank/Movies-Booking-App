@@ -16,7 +16,7 @@ const MovieCard = () => {
   useEffect(() => {
     const fetchMovies = async () => {
       try {
-        const { data } = await axios.get("http://localhost:8080/movie/");
+        const { data } = await axios.get("https://movies-booking-app.onrender.com/movie/");
         setMovies(data.movies);
       } catch (error) {
         console.error(error);
