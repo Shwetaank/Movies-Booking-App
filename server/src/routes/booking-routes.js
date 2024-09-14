@@ -21,7 +21,7 @@ const bookingsRouter = express.Router();
  * /booking:
  *   post:
  *     summary: Create a new booking
- *     description: Create a new booking for a movie with the specified details. This endpoint allows users to book a movie by providing movie ID, date, seats, and slot details.
+ *     description: Create a new booking for a movie with the specified details. This endpoint allows users to book a movie by providing movie ID, date, seats, and slot details, as well as optional fields like name, email, totalPrice, and status.
  *     tags:
  *       - Bookings
  *     requestBody:
@@ -54,11 +54,24 @@ const bookingsRouter = express.Router();
  *                     type: string
  *                     description: The time slot for the booking (e.g., morning, noon, evening, night).
  *                 description: The time slot for the booking.
+ *               name:
+ *                 type: string
+ *                 description: The name of the person making the booking.
+ *               email:
+ *                 type: string
+ *                 description: The email address of the person making the booking.
+ *               totalPrice:
+ *                 type: number
+ *                 description: The total price for the booking.
+ *               status:
+ *                 type: string
+ *                 description: The status of the booking (e.g., pending, confirmed, cancelled).
  *             required:
  *               - movie
  *               - date
  *               - seats
  *               - slot
+ *               - totalPrice
  *     responses:
  *       201:
  *         description: Booking created successfully
@@ -92,8 +105,14 @@ const bookingsRouter = express.Router();
  *                       properties:
  *                         label:
  *                           type: string
- *                     isBooked:
- *                       type: boolean
+ *                     name:
+ *                       type: string
+ *                     email:
+ *                       type: string
+ *                     totalPrice:
+ *                       type: number
+ *                     status:
+ *                       type: string
  *       400:
  *         description: Bad request
  *         content:
@@ -159,8 +178,14 @@ const bookingsRouter = express.Router();
  *                   properties:
  *                     label:
  *                       type: string
- *                 isBooked:
- *                   type: boolean
+ *                 name:
+ *                   type: string
+ *                 email:
+ *                   type: string
+ *                 totalPrice:
+ *                   type: number
+ *                 status:
+ *                   type: string
  *       404:
  *         description: No previous booking found
  *         content:
@@ -225,8 +250,14 @@ const bookingsRouter = express.Router();
  *                   properties:
  *                     label:
  *                       type: string
- *                 isBooked:
- *                   type: boolean
+ *                 name:
+ *                   type: string
+ *                 email:
+ *                   type: string
+ *                 totalPrice:
+ *                   type: number
+ *                 status:
+ *                   type: string
  *       500:
  *         description: Internal server error
  *         content:

@@ -7,9 +7,9 @@ import mongoose from "mongoose";
 export const validateBooking = [
   body("movie")
     .notEmpty()
-    .withMessage("Movie title is required")
-    .isString()
-    .withMessage("Movie title must be a string"),
+    .withMessage("Movie ID is required")
+    .isMongoId()
+    .withMessage("Invalid Movie ID"),
 
   body("date")
     .notEmpty()
@@ -34,6 +34,25 @@ export const validateBooking = [
     .withMessage(
       "Slot label must be one of 'morning', 'noon', 'evening', 'night'"
     ),
+
+  body("name")
+    .notEmpty()
+    .withMessage("Name is required")
+    .isString()
+    .withMessage("Name must be a string"),
+
+  body("email").optional().isEmail().withMessage("Invalid email format"),
+
+  body("totalPrice")
+    .notEmpty()
+    .withMessage("Total price is required")
+    .isNumeric()
+    .withMessage("Total price must be a number"),
+
+  body("status")
+    .optional()
+    .isIn(["pending", "confirmed", "cancelled"])
+    .withMessage("Status must be one of 'pending', 'confirmed', 'cancelled'"),
 ];
 
 // Controller create new booking
@@ -44,7 +63,8 @@ export const newBooking = async (req, res, next) => {
     return res.status(400).json({ errors: errors.array() });
   }
 
-  const { movie, date, seats, slot } = req.body;
+  const { movie, date, seats, slot, name, email, totalPrice, status } =
+    req.body;
   let existingMovie;
   let booking;
 
@@ -57,7 +77,16 @@ export const newBooking = async (req, res, next) => {
     // Ensure date is properly formatted
     const formattedDate = new Date(date).toISOString().split("T")[0];
 
-    booking = new Booking({ movie, date: formattedDate, seats, slot });
+    booking = new Booking({
+      movie,
+      date: formattedDate,
+      seats,
+      slot,
+      name,
+      email,
+      totalPrice,
+      status,
+    });
 
     const session = await mongoose.startSession();
     session.startTransaction();

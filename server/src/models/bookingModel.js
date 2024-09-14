@@ -1,17 +1,5 @@
 import mongoose from "mongoose";
 
-// Custom setter to handle date formatting
-const dateSetter = (value) => {
-  if (value) {
-    const date = new Date(value);
-    // Create a date string in YYYY-MM-DD format
-    return new Date(date.getFullYear(), date.getMonth(), date.getDate())
-      .toISOString()
-      .split("T")[0];
-  }
-  return value;
-};
-
 const bookingSchema = new mongoose.Schema({
   movie: {
     type: mongoose.Types.ObjectId,
@@ -19,17 +7,14 @@ const bookingSchema = new mongoose.Schema({
     required: true,
   },
   date: {
-    type: String,
+    type: Date,
     required: true,
-    set: dateSetter,
   },
   seats: [
     {
       seatNumber: {
         type: String,
         required: true,
-        match: /^[A-Z]\d{1,2}$/,
-        message: "Seat number must follow the pattern like 'A1', 'B12'",
       },
     },
   ],
@@ -37,8 +22,25 @@ const bookingSchema = new mongoose.Schema({
     label: {
       type: String,
       required: true,
-      enum: ["morning", "noon", "evening", "night"],
     },
+  },
+  name: {
+    type: String,
+    required: true,
+  },
+  email: {
+    type: String,
+    match: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+    // No `required` field here, making it optional
+  },
+  totalPrice: {
+    type: Number,
+    required: true,
+  },
+  status: {
+    type: String,
+    enum: ["pending", "confirmed", "cancelled"],
+    default: "pending",
   },
 });
 

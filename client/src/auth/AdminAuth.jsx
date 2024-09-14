@@ -12,7 +12,7 @@ const AdminAuth = ({ onLoginSuccess }) => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [showToast, setShowToast] = useState(false); 
+  const [showToast, setShowToast] = useState(false);
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
@@ -59,14 +59,13 @@ const AdminAuth = ({ onLoginSuccess }) => {
 
   return (
     <motion.div
-      className="flex items-center justify-center"
+      className="flex items-center justify-center p-4"
       initial={{ opacity: 0, y: -50 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
       <motion.div
-        className="w-full  p-10 shadow-xl rounded-xl bg-gradient-to-r from-gray-200 via-gray-300 to-gray-400
-        dark:bg-gradient-to-r dark:from-gray-800 dark:via-gray-700 dark:to-gray-600"
+        className="w-full max-w-md p-10 shadow-xl rounded-xl bg-gradient-to-r from-gray-200 via-gray-300 to-gray-400 dark:bg-gradient-to-r dark:from-gray-800 dark:via-gray-700 dark:to-gray-600 relative"
         initial={{ scale: 0.9 }}
         animate={{ scale: 1 }}
         transition={{ duration: 0.3 }}
@@ -75,7 +74,7 @@ const AdminAuth = ({ onLoginSuccess }) => {
           Admin Panel Login
         </h2>
 
-        {error && <p className="text-purple-500 text-center mb-4">{error}</p>}
+        {error && <p className="text-red-500 text-center mb-4">{error}</p>}
 
         <form onSubmit={handleLogin} className="space-y-5">
           <div>
@@ -95,6 +94,7 @@ const AdminAuth = ({ onLoginSuccess }) => {
               required
               color="success"
               shadow
+              className="pl-1" // Adds padding to ensure text doesn't overlap with the icon
             />
           </div>
 
@@ -115,13 +115,14 @@ const AdminAuth = ({ onLoginSuccess }) => {
               required
               shadow
               color="success"
+              className="pl-1" // Adds padding to ensure text doesn't overlap with the icon
             />
           </div>
 
           <Button
             type="submit"
             gradientDuoTone="purpleToPink"
-            className="w-full p-1 font-extrabold transition-transform transform hover:scale-105 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full p-2 font-extrabold transition-transform transform hover:scale-105 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
             disabled={loading}
           >
             {loading ? "Please Wait..." : "Log In"}
