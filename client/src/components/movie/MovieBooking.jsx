@@ -1,9 +1,26 @@
+import { useState } from "react";
 import { useUser } from "@clerk/clerk-react";
 import BookingForm from "../forms/BookingForm";
 import LastBooking from "./LastBooking";
+import { Spinner, Alert } from "flowbite-react";
 
 const MovieBooking = () => {
   const { user } = useUser();
+  const [bookingUpdated, setBookingUpdated] = useState(false);
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  const handleBookingSuccess = () => {
+    setBookingUpdated((prev) => !prev); // Toggle bookingUpdated state
+  };
+
+  const handleError = (errorMessage) => {
+    setError(errorMessage);
+  };
+
+  const handleLoading = (isLoading) => {
+    setLoading(isLoading);
+  };
 
   return (
     <div className="flex flex-col items-center justify-center p-4">
@@ -17,13 +34,27 @@ const MovieBooking = () => {
         </p>
       </div>
 
-      {/* Booking Form & Get Last Booking Detail */}
+      {/* Booking Form & Last Booking */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-2 w-full max-w-screen-lg">
         <div className="w-full flex justify-center">
-          <BookingForm />
+          <BookingForm
+            onSuccess={handleBookingSuccess}
+            onError={handleError}
+            onLoading={handleLoading}
+          />
         </div>
         <div className="w-full flex justify-center">
-          <LastBooking />
+          {loading ? (
+            <div className="flex justify-center items-center h-full">
+              <Spinner size="xl" />
+            </div>
+          ) : error ? (
+            <Alert color="failure" className="w-full max-w-md">
+              <span>{error}</span>
+            </Alert>
+          ) : (
+            <LastBooking bookingUpdated={bookingUpdated} />
+          )}
         </div>
       </div>
     </div>

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import { Card, Button, Spinner, Modal, Alert } from "flowbite-react";
 import { FaTrashAlt } from "react-icons/fa";
@@ -9,46 +9,54 @@ const LastBooking = () => {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
-
-  // State to hold the booking ID to delete
   const [bookingIdToDelete, setBookingIdToDelete] = useState(null);
 
-  useEffect(() => {
-    // Fetch movies and last booking from the backend
-    const fetchMoviesAndBooking = async () => {
-      try {
-        // Fetch movies
-        const moviesResponse = await axios.get(
-          "https://movies-booking-app.onrender.com/movie"
-        );
-        setMovies(moviesResponse.data.movies);
+  const fetchMoviesAndBooking = useCallback(async () => {
+    setLoading(true);
+    setError(null);
 
-        // Fetch last booking
-        const bookingResponse = await axios.get(
-          "https://movies-booking-app.onrender.com/booking"
-        );
-        setLastBooking(bookingResponse.data);
-      } catch (err) {
-        console.error("Error fetching data:", err);
-        setError("⚠️ Failed to fetch data.");
-      } finally {
-        setLoading(false);
+    try {
+      const moviesResponse = await axios.get(
+        "https://movies-booking-app.onrender.com/movie"
+      );
+      setMovies(moviesResponse.data.movies);
+
+      // Fetch last booking
+      const bookingResponse = await axios.get(
+        "https://movies-booking-app.onrender.com/booking"
+      );
+
+      if (bookingResponse.data.message === "No previous booking found") {
+        setLastBooking(null);
+      } else {
+        setLastBooking(bookingResponse.data || null);
       }
-    };
-
-    fetchMoviesAndBooking();
+    } catch (err) {
+      console.error("Error fetching data:", err);
+      setError("⚠️ Failed to fetch data.");
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
+  useEffect(() => {
+    fetchMoviesAndBooking();
+  }, [fetchMoviesAndBooking]);
+
   const handleDelete = async () => {
+    setLoading(true);
     try {
       await axios.delete(
         `https://movies-booking-app.onrender.com/booking/${bookingIdToDelete}`
       );
-      setLastBooking(null); 
-      setShowModal(false); 
+      setBookingIdToDelete(null);
+      setShowModal(false);
+      fetchMoviesAndBooking();
     } catch (err) {
       console.error("Error deleting booking:", err);
       setError("❌ Failed to delete booking.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -57,7 +65,7 @@ const LastBooking = () => {
     return movie ? movie.title : "Unknown Movie";
   };
 
-  if (loading) {
+  if (loading && !lastBooking) {
     return (
       <div className="flex justify-center items-center h-screen">
         <Spinner size="xl" />
@@ -75,7 +83,7 @@ const LastBooking = () => {
         ) : (
           <Card
             className="w-full p-6 rounded-lg shadow-md text-center bg-gradient-to-r from-gray-200 via-gray-300 to-gray-400
-        dark:bg-gradient-to-r dark:from-gray-800 dark:via-gray-700 dark:to-gray-600"
+            dark:bg-gradient-to-r dark:from-gray-800 dark:via-gray-700 dark:to-gray-600"
           >
             <h1 className="text-2xl font-bold mb-4 text-purple-700">
               🎟️ Last Booking
@@ -94,7 +102,9 @@ const LastBooking = () => {
                 </p>
                 <p className="text-left">
                   <strong className="text-indigo-700">🪑 Seats :-</strong>{" "}
-                  {lastBooking.seats.map((seat) => seat.seatNumber).join(", ")}
+                  {lastBooking.seats
+                    .map((seat) => seat.seatNumber)
+                    .join(", ")}
                 </p>
                 <p className="text-left">
                   <strong className="text-indigo-700">🕒 Slot :-</strong>{" "}
@@ -112,7 +122,7 @@ const LastBooking = () => {
                   <strong className="text-indigo-700">💵 Total Price :-</strong>{" "}
                   ₹ {lastBooking.totalPrice}
                 </p>
-                <div className="flex justify-center ">
+                <div className="flex justify-center">
                   <Button
                     onClick={() => {
                       setBookingIdToDelete(lastBooking._id);
@@ -127,7 +137,7 @@ const LastBooking = () => {
                 </div>
               </div>
             ) : (
-              <p className="text-gray-600">No booking found</p>
+              <p className="text-gray-600">No previous booking found</p>
             )}
           </Card>
         )}
@@ -138,6 +148,7 @@ const LastBooking = () => {
         <Modal.Header>Confirm Deletion</Modal.Header>
         <Modal.Body>
           <p>Are you sure you want to delete your booking?</p>
+          {loading && <Spinner size="sm" className="mt-4" />}
         </Modal.Body>
         <Modal.Footer className="flex justify-end gap-4">
           <Button
@@ -146,10 +157,7 @@ const LastBooking = () => {
           >
             Cancel
           </Button>
-          <Button
-            gradientDuoTone="pinkToOrange"
-            onClick={() => handleDelete(bookingIdToDelete)}
-          >
+          <Button gradientDuoTone="pinkToOrange" onClick={handleDelete}>
             Confirm
           </Button>
         </Modal.Footer>

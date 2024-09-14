@@ -12,7 +12,7 @@ import {
 } from "flowbite-react";
 import axios from "axios";
 
-const BookingForm = ({ onSuccess }) => {
+const BookingForm = ({ onSuccess, onError, onLoading }) => {
   const [movie, setMovie] = useState("");
   const [movies, setMovies] = useState([]);
   const [date, setDate] = useState("");
@@ -23,7 +23,7 @@ const BookingForm = ({ onSuccess }) => {
   const [totalPrice, setTotalPrice] = useState(0);
   const [message, setMessage] = useState(null);
   const [messageType, setMessageType] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false); // Define loading state
   const [fetchingMovies, setFetchingMovies] = useState(true);
 
   // Memoized slot pricing
@@ -46,15 +46,16 @@ const BookingForm = ({ onSuccess }) => {
         console.error("Error fetching movies:", error);
         setMessage("⚠️ Failed to fetch movies.");
         setMessageType("error");
+        onError && onError("Failed to fetch movies");
       } finally {
         setFetchingMovies(false);
       }
     };
 
     fetchMovies();
-  }, []);
+  }, [onError]);
 
-  // Memoized calculateTotalPrice function to avoid ESLint warnings
+  // Memoized calculateTotalPrice function
   const calculateTotalPrice = useCallback(() => {
     const seatCount = seats.length;
     const slotPrice = slotPricing[slot];
@@ -66,11 +67,25 @@ const BookingForm = ({ onSuccess }) => {
     setTotalPrice(calculateTotalPrice());
   }, [slot, seats, calculateTotalPrice]);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
+  // Function to reset the form
+  const resetForm = () => {
+    setMovie("");
+    setDate("");
+    setSeats([{ seatNumber: "" }]);
+    setSlot("morning");
+    setName("");
+    setEmail("");
+    setTotalPrice(0);
     setMessage(null);
     setMessageType("");
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setMessage(null);
+    setMessageType("");
+    setLoading(true); // Set loading to true
+    onLoading && onLoading(true);
 
     const bookingData = {
       movie,
@@ -91,12 +106,15 @@ const BookingForm = ({ onSuccess }) => {
       setMessage("🎉 Booking confirmed!");
       setMessageType("success");
       onSuccess && onSuccess();
+      resetForm(); // Reset form fields after successful booking
     } catch (err) {
       console.error("Error occurred during booking:", err);
       setMessage("⚠️ Failed to confirm booking. Please try again.");
       setMessageType("error");
+      onError && onError("Failed to confirm booking");
     } finally {
-      setLoading(false);
+      setLoading(false); // Set loading to false
+      onLoading && onLoading(false);
     }
   };
 
@@ -269,6 +287,8 @@ const BookingForm = ({ onSuccess }) => {
 
 BookingForm.propTypes = {
   onSuccess: PropTypes.func,
+  onError: PropTypes.func,
+  onLoading: PropTypes.func,
 };
 
 export default BookingForm;
