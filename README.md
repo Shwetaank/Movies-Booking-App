@@ -48,6 +48,8 @@ Movie Mania is an engaging platform for movie enthusiasts to browse, book, and m
 ## Demo 🎥
 Watch the demo video to see Movie Mania in action:-
 Booking a Movie and Viewing Last Booking-
+
+
 https://github.com/user-attachments/assets/b11dc4f8-78c0-45a2-8c95-93b845da1caa
 
 
